@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --color-background: #ffffff; /* Cor de fundo */
+    --color-light-background: #faf5ff; /* Cor de fundo clara adicional */
+    --color-primary: #581c87;    /* Cor primária */
+    --color-secondary: #c084fc;  /* Cor secundária */
+    --color-neutral: #7c7280;    /* Cor neutra */
+  }
+  
+html, body {
+  background-color: var(--color-background);
+}
+
+  
