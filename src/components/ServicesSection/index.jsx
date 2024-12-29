@@ -4,7 +4,7 @@ import ServiceCard from '../ServiceCard';
 
 const ServicesSection = () => {
   return (
-    <Section title="Nossos Serviços">
+    <Section id={'servicos'} title="Nossos Serviços">
       <ServiceCard 
         title="Limpeza de Pele" 
         description="Tratamento completo para uma pele radiante e saudável" 
