@@ -11,6 +11,7 @@ export default {
         lightBackground: '#faf5ff',
         primary: '#581c87',
         secondary: '#c084fc',
+        secondaryHover: '#b064fc',
         neutral: '#7c7280',
       },
     },
