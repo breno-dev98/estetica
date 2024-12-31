@@ -210,7 +210,7 @@ const numeroWhatsApp = "5585982390117"
                   <button
                     onClick={() => handleHoraChange(h)}
                     key={index}
-                    className={`rounded-md bg-gray-100 hover:bg-lightBackground text-md px-7 p-2 ${
+                    className={`rounded-md bg-gray-100 hover:bg-lightBackground text-md flex justify-center px-7 p-2 ${
                       hora === h ? "bg-secondary hover:bg-secondary" : ""
                     }`}
                   >
