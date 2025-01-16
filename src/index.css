@@ -9,6 +9,10 @@
     --color-secondary: #c084fc;  /* Cor secundária */
     --color-secondary-hover: #b064fc;  /* Cor secundária hover */
     --color-neutral: #7c7280;    /* Cor neutra */
+
+    --nova-cor: #ba9ef1;
+    --nova-cor-2: #8c52ff;
+    --nova-cor-3: #5e17eb;
   }
   
 html, body {
