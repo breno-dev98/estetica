@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Section from "../../components/Section";
+import SectionAgendamento from "../../components/SectionAgendamento";
 import ServiceCard from "../../components/ServiceCard";
 import { services } from "../../database/services";
 import { SiPix } from "react-icons/si";
@@ -142,162 +142,172 @@ const numeroWhatsApp = "5585982390117"
 };
 
   return (
-    <div className="px-10 md:px-5 bg-gray-50">
-      <Section title={"Agende seus Procedimentos"}>
-        {services.map((service, index) => (
-          <ServiceCard
-            backgroundColor={"bg-background cursor-pointer hover:shadow-lg"}
-            onClick={() => toggleSelected(index)}
-            border={
-              servicesSelecteds.includes(index)
-                ? "border border-2 border-primary bg-lightBackground"
-                : ""
-            }
-            key={index}
-            title={service.title}
-            description={service.description}
-            price={service.price}
-          />
-        ))}
-      </Section>
-      {/* Exibe os serviços selecionados */}
-      {servicesSelecteds.length > 0 && (
-        <div className="bg-background container px-10 py-6 mx-auto rounded-md shadow-lg min-h-44 h-full grid grid-cols-1 md:grid-cols-4 gap-6">
-          {/* Coluna 1: Lista de serviços selecionados */}
-          <div className="col-span-4">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Serviços Selecionados:
-            </h2>
-            <ul className="list-inside list-disc">
-              {servicesSelecteds.map((index) => (
-                <li key={index} className="text-md text-gray-600">
-                  {services[index].title} - {services[index].price}
-                </li>
+    <div className="min-h-full flex flex-col pb-8">
+      <div className="flex-1 px-4 md:px-10 py-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto w-full">
+          <SectionAgendamento title={"Agende seus Procedimentos"}>
+            <div className="flex flex-wrap gap-4 justify-center max-w-5xl mx-auto">
+              {services.map((service, index) => (
+                <ServiceCard
+                  backgroundColor={"bg-background cursor-pointer hover:shadow-lg"}
+                  onClick={() => toggleSelected(index)}
+                  border={
+                    servicesSelecteds.includes(index)
+                      ? "border border-2 border-primary bg-lightBackground"
+                      : ""
+                  }
+                  key={index}
+                  title={service.title}
+                  description={service.description}
+                  price={service.price}
+                />
               ))}
-            </ul>
-          </div>
-
-          {/* Coluna 2: Escolher Data */}
-          <div className="col-span-4 md:col-span-2">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Escolha a Data e Horário
-            </h2>
-            <label
-              className="text-md flex flex-col text-neutral font-semibold"
-              htmlFor="date"
-            >
-              Data
-              <input
-                className="border rounded-md p-2 text-black mt-2"
-                id="date"
-                type="date"
-                name="date"
-                value={date}
-                min={new Date().toISOString().split("T")[0]}
-                onChange={handleDateChange}
-              />
-            </label>
-          </div>
-
-          {/* Coluna 3: Horários Disponíveis */}
-          {date !== "" && (
-            <div className="col-span-2">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                Horários Disponíveis
-              </h2>
-              <div className="grid grid-cols-2 gap-2">
-                {horarios.map((h, index) => (
-                  <button
-                    onClick={() => handleHoraChange(h)}
-                    key={index}
-                    className={`rounded-md bg-gray-100 hover:bg-lightBackground text-md flex justify-center px-7 p-2 ${
-                      hora === h ? "bg-secondary hover:bg-secondary" : ""
-                    }`}
-                  >
-                    {h}
-                  </button>
-                ))}
-              </div>
             </div>
-          )}
-
-          {/* Coluna 4: Método de Pagamento */}
-          {hora !== "" && (
-            <div className="col-span-4">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                Escolha o Método de Pagamento
-              </h2>
-
-              <div className="grid grid-cols-2 md:grid md:grid-cols-4 gap-2">
-                {metodosPagamento.map((metodoPagamento, index) => (
-                  <div
-                    key={index}
-                    onClick={() => handleMetodoChange(metodoPagamento.nome)}
-                    className={`w-full h-full gap-2 font-semibold p-6 border hover:border-secondary rounded-md flex flex-col items-center justify-center ${
-                      metodo === metodoPagamento.nome
-                        ? " bg-lightBackground border-primary"
-                        : ""
-                    }`}
-                  >
-                    {metodoPagamento.icone}
-                    <p>{metodoPagamento.nome}</p>
+          </SectionAgendamento>
+          
+          {servicesSelecteds.length > 0 && (
+            <div className="bg-background px-4 md:px-10 py-6 md:py-8 mt-8 rounded-md shadow-lg">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {/* Coluna 1: Lista de serviços selecionados */}
+                <div className="space-y-6 md:space-y-8">
+                  <div className="col-span-4">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                      Serviços Selecionados:
+                    </h2>
+                    <ul className="list-inside list-disc">
+                      {servicesSelecteds.map((index) => (
+                        <li key={index} className="text-md text-gray-600">
+                          {services[index].title} - {services[index].price}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                ))}
+
+                  {/* Coluna 2: Escolher Data */}
+                  <div className="col-span-4 md:col-span-2 mt-6 md:mt-0">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                      Escolha a Data e Horário
+                    </h2>
+                    <label
+                      className="text-md flex flex-col text-neutral font-semibold"
+                      htmlFor="date"
+                    >
+                      Data
+                      <input
+                        className="border rounded-md p-2 text-black mt-2"
+                        id="date"
+                        type="date"
+                        name="date"
+                        value={date}
+                        min={new Date().toISOString().split("T")[0]}
+                        onChange={handleDateChange}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Coluna 3: Horários Disponíveis */}
+                  {date !== "" && (
+                    <div className="col-span-2 mt-6 md:mt-0">
+                      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                        Horários Disponíveis
+                      </h2>
+                      <div className="grid grid-cols-2 gap-2">
+                        {horarios.map((h, index) => (
+                          <button
+                            onClick={() => handleHoraChange(h)}
+                            key={index}
+                            className={`rounded-md bg-gray-100 hover:bg-lightBackground text-md flex justify-center px-7 p-2 ${
+                              hora === h ? "bg-secondary hover:bg-secondary" : ""
+                            }`}
+                          >
+                            {h}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Coluna 4: Método de Pagamento */}
+                  {hora !== "" && (
+                    <div className="col-span-4 mt-6 md:mt-0">
+                      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                        Escolha o Método de Pagamento
+                      </h2>
+
+                      <div className="grid grid-cols-2 md:grid md:grid-cols-4 gap-2">
+                        {metodosPagamento.map((metodoPagamento, index) => (
+                          <div
+                            key={index}
+                            onClick={() => handleMetodoChange(metodoPagamento.nome)}
+                            className={`w-full h-full gap-2 font-semibold p-6 border hover:border-secondary rounded-md flex flex-col items-center justify-center ${
+                              metodo === metodoPagamento.nome
+                                ? " bg-lightBackground border-primary"
+                                : ""
+                            }`}
+                          >
+                            {metodoPagamento.icone}
+                            <p>{metodoPagamento.nome}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Button de Agendamento */}
+                  {metodo !== "" && (
+                    <form onSubmit={handleSubmit} className="col-span-4 mt-6 md:mt-0">
+                      <div className="flex flex-col rounded bg-lightBackground border border-secondary p-4">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                          Resumo do Agendamento
+                        </h2>
+                        <p className="text-lg text-gray-600 font-medium">
+                          Serviços:{" "}
+                          {servicesSelecteds.map((index) => (
+                            <span className="text-base font-normal text-neutral">
+                              {services[index].title} {servicesSelecteds.length > 1 ? " - " : ""}
+                            </span>
+                          ))}
+                        </p>
+
+                        <p className="text-lg text-gray-600 font-medium">
+                          Valor Total:{" "}
+                          <span className="text-base font-normal text-neutral">
+                          R$ {calculateTotal().toFixed(2)}
+                          </span>
+                        </p>
+
+                        <p className="text-lg text-gray-600 font-medium">
+                          Data:{" "}
+                          <span className="text-base font-normal text-neutral">
+                            {formatDateToBR(date)}
+                          </span>
+                        </p>
+
+                        <p className="text-lg text-gray-600 font-medium">
+                          Horário:{" "}
+                          <span className="text-base font-normal text-neutral">
+                            {hora}
+                          </span>
+                        </p>
+                        <p className="text-lg text-gray-600 font-medium">
+                          Método de Pagamento:{" "}
+                          <span className="text-base font-normal text-neutral">
+                            {metodo}
+                          </span>
+                        </p>
+                      </div>
+
+                      <button type="submit" className="w-full rounded-md p-3 mt-4 bg-secondary hover:bg-secondaryHover text-white">
+                        Confirmar Agendamento
+                      </button>
+                    </form>
+                  )}
+                </div>
               </div>
             </div>
-          )}
-
-          {/* Button de Agendamento */}
-          {metodo !== "" && (
-            <form onSubmit={handleSubmit} className="col-span-4">
-              <div className="flex flex-col rounded bg-lightBackground border border-secondary p-4">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Resumo do Agendamento
-                </h2>
-                <p className="text-lg text-gray-600 font-medium">
-                  Serviços:{" "}
-                  {servicesSelecteds.map((index) => (
-                    <span className="text-base font-normal text-neutral">
-                      {services[index].title} {servicesSelecteds.length > 1 ? " - " : ""}
-                    </span>
-                  ))}
-                </p>
-
-                <p className="text-lg text-gray-600 font-medium">
-                  Valor Total:{" "}
-                  <span className="text-base font-normal text-neutral">
-                  R$ {calculateTotal().toFixed(2)}
-                  </span>
-                </p>
-
-                <p className="text-lg text-gray-600 font-medium">
-                  Data:{" "}
-                  <span className="text-base font-normal text-neutral">
-                    {formatDateToBR(date)}
-                  </span>
-                </p>
-
-                <p className="text-lg text-gray-600 font-medium">
-                  Horário:{" "}
-                  <span className="text-base font-normal text-neutral">
-                    {hora}
-                  </span>
-                </p>
-                <p className="text-lg text-gray-600 font-medium">
-                  Método de Pagamento:{" "}
-                  <span className="text-base font-normal text-neutral">
-                    {metodo}
-                  </span>
-                </p>
-              </div>
-
-              <button type="submit" className="w-full rounded-md p-3 mt-4 bg-secondary hover:bg-secondaryHover text-white">
-                Confirmar Agendamento
-              </button>
-            </form>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
