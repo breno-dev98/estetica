@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { HiMenu, HiX } from "react-icons/hi"; // Ícones de menu e fechar
-import { FaServicestack, FaInfoCircle, FaPhoneAlt } from "react-icons/fa"; // Ícones para os links
+import { FaServicestack, FaInfoCircle, FaPhoneAlt, FaHome } from "react-icons/fa"; // Ícones para os links
 
 const Header = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -85,6 +85,16 @@ const Header = () => {
               <h2 className="text-2xl font-bold mb-6 text-white">Menu</h2>
 
               {/* Links com ícones */}
+              <div
+                onClick={toggleMenu}
+                className="flex items-center space-x-3 p-3 rounded-md hover:bg-lightBackground w-full"
+              >
+                <FaHome size={20} />
+                <a href="#servicos" className="text-lg font-semibold">
+                  Inicio
+                </a>
+              </div>
+
               <div
                 onClick={toggleMenu}
                 className="flex items-center space-x-3 p-3 rounded-md hover:bg-lightBackground w-full"
