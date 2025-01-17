@@ -14,7 +14,7 @@ const Hero = () => {
         Descubra nossos tratamentos exclusivos para realçar sua beleza natural.
       </p>
       <Link to={'/agendamento'}>
-        <button className="bg-secondary text-sm sm:text-base md:text-md lg:text-lg xl:text-xl mx-auto text-background py-2 px-4 sm:py-3 sm:px-6 md:py-4 md:px-8 rounded-md hover:bg-primary hover:text-lightBackground transition duration-300">
+        <button className="bg-secondary text-base sm:text-base md:text-md lg:text-lg xl:text-xl mx-auto text-background py-2 px-4 sm:py-3 sm:px-6 md:py-4 md:px-8 rounded-md hover:bg-primary hover:text-lightBackground transition duration-300">
           Agende Agora
         </button>
       </Link>
