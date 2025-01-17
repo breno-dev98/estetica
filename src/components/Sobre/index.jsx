@@ -3,7 +3,7 @@ import Section from '../Section';
 
 const Sobre = () => {
   return (
-    <Section id={'sobre'} title="Sobre Nós" backgroundColor="bg-lightBackground">
+    <Section id={'sobre'} title="Sobre Nós">
       <div className="text-center max-w-2xl">
         <p className="text-lg md:text-2xl text-gray-600">
           Com mais de 10 anos de experiência, nossa equipe especializada está

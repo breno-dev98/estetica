@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 const Hero = () => {
   return (
     <div
-      className="text-center flex flex-col justify-center items-center bg-lightBackground px-4"
-      style={{ height: 'calc(50vh - 64px)' }}
+    id="inicio"
+      className="text-center flex flex-col justify-center items-center  px-4"
+      style={{ height: 'calc(100vh - 55px)' }}
     >
       <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-primary mb-4">
         Sua beleza merece o melhor cuidado

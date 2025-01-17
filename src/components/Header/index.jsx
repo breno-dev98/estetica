@@ -33,12 +33,15 @@ const Header = () => {
     <header>
       {/* Menu para Desktop */}
       {!isMobile && (
-        <div className="bg-secondary">
+        <div className="bg-secondary fixed w-full">
           <div className="container mx-auto flex justify-between items-center p-4 px-8">
             <div className="text-background font-bold text-3xl">
               <Link to={"/"}>Dri Estética</Link>
             </div>
             <div className="flex space-x-4 text-background text-md">
+              <a href="#inicio" className="hover:underline">
+                Inicio
+              </a>
               <a href="#servicos" className="hover:underline">
                 Serviços
               </a>
@@ -56,7 +59,7 @@ const Header = () => {
       {/* Menu Mobile */}
       {isMobile && (
         <>
-          <div className="bg-secondary p-4 flex justify-between items-center">
+          <div className="bg-secondary fixed w-full p-4 flex justify-between items-center">
             <div className="text-background font-bold text-3xl">
               <Link to={"/"}>Dri Estética</Link>
             </div>
