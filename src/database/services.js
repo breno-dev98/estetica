@@ -12,7 +12,7 @@ export const services = [
     {
       title: "Depilação a Laser",
       description: "Tecnologia avançada para resultados duradouros.",
-      price: "A partir de R$ 200,00",
+      price: "R$ 200,00",
     },
     {
       title: "Hidratação Facial",

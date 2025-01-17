@@ -6,6 +6,7 @@ import { SiPix } from "react-icons/si";
 import { FaCcMastercard, FaCreditCard, FaMoneyBillAlt } from "react-icons/fa";
 
 const Agendamento = () => {
+  const [error, setError] = useState(null);
   const horarios = ["9:00", "10:00", "11:00", "12:00"];
   const metodosPagamento = [
     { nome: "PIX", icone: <SiPix size={22} className="text-cyan-500" /> },
@@ -204,7 +205,7 @@ const numeroWhatsApp = "5585982390117"
                       id="date"
                       type="date"
                       name="date"
-                      value={date}
+                      value={date < new Date().toISOString().split("T")[0] ? new Date().toISOString().split("T")[0] : date}
                       min={new Date().toISOString().split("T")[0]}
                       onChange={handleDateChange}
                     />
