@@ -1,12 +1,15 @@
 // ServiceCard.js
-const ServiceCard = ({ title, description, price, border, backgroundColor, onClick }) => {
+const ServiceCard = ({ title, description, price, backgroundColor, onClick, border, className }) => {
   return (
-    <div onClick={onClick} className={`${backgroundColor} ${border} p-6 rounded-lg shadow-md sm:w-80 md:w-[450px] w-9/12 md:h-56 flex flex-col justify-between text-center`}>
+    <div 
+      onClick={onClick}
+      className={`${backgroundColor} ${border} p-6 rounded-lg shadow-md w-9/12 flex flex-col justify-between text-center ${className}`}
+    >
       <div>
-        <h2 className="text-xl md:text-3xl font-bold text-primary mb-2">{title}</h2>
-        <p className="text-neutral text-md md:text-lg lg:text-2xl mb-4">{description}</p>
+        <h2 className="text-xl font-bold text-primary mb-2">{title}</h2>
+        <p className="text-neutral text-md mb-4">{description}</p>
       </div>
-      <p className="text-secondary text-md md:text-lg lg:text-2xl font-bold">{price}</p>
+      <p className="text-secondary text-md font-bold">{price}</p>
     </div>
   );
 };

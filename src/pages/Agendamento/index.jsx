@@ -146,9 +146,10 @@ const numeroWhatsApp = "5585982390117"
       <div className="flex-1 px-4 md:px-10 py-8 bg-gray-50">
         <div className="max-w-7xl mx-auto w-full">
           <SectionAgendamento title={"Agende seus Procedimentos"}>
-            <div className="flex flex-wrap gap-4 justify-center max-w-5xl mx-auto">
+            <div className="flex flex-wrap gap-4 justify-center max-w-[1400px] mx-auto">
               {services.map((service, index) => (
                 <ServiceCard
+                  className="md:w-[calc(33.33%-1rem)] xl:w-[calc(25%-1rem)] md:h-56"
                   backgroundColor={"bg-background cursor-pointer hover:shadow-lg"}
                   onClick={() => toggleSelected(index)}
                   border={
@@ -167,57 +168,61 @@ const numeroWhatsApp = "5585982390117"
           
           {servicesSelecteds.length > 0 && (
             <div className="bg-background px-4 md:px-10 py-6 md:py-8 mt-8 rounded-md shadow-lg">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="flex flex-col md:flex-row gap-8">
                 {/* Coluna 1: Lista de serviços selecionados */}
-                <div className="space-y-6 md:space-y-8">
-                  <div className="col-span-4">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                      Serviços Selecionados:
-                    </h2>
-                    <ul className="list-inside list-disc">
-                      {servicesSelecteds.map((index) => (
-                        <li key={index} className="text-md text-gray-600">
-                          {services[index].title} - {services[index].price}
-                        </li>
-                      ))}
-                    </ul>
+                <div className="w-full md:w-1/2">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                    Serviços Selecionados:
+                  </h2>
+                  <ul className="list-inside list-disc">
+                    {servicesSelecteds.map((index) => (
+                      <li key={index} className="text-md text-gray-600">
+                        {services[index].title} - {services[index].price}
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  <div className="mt-4 p-4 bg-lightBackground rounded-md">
+                    <p className="text-lg font-bold text-gray-800">
+                      Valor Total: R$ {calculateTotal().toFixed(2)}
+                    </p>
                   </div>
+                </div>
 
-                  {/* Coluna 2: Escolher Data */}
-                  <div className="col-span-4 md:col-span-2 mt-6 md:mt-0">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                      Escolha a Data e Horário
-                    </h2>
-                    <label
-                      className="text-md flex flex-col text-neutral font-semibold"
-                      htmlFor="date"
-                    >
-                      Data
-                      <input
-                        className="border rounded-md p-2 text-black mt-2"
-                        id="date"
-                        type="date"
-                        name="date"
-                        value={date}
-                        min={new Date().toISOString().split("T")[0]}
-                        onChange={handleDateChange}
-                      />
-                    </label>
-                  </div>
+                {/* Coluna 2: Escolher Data e Horário */}
+                <div className="w-full md:w-1/2">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                    Escolha a Data e Horário
+                  </h2>
+                  <label
+                    className="text-md flex flex-col text-neutral font-semibold mb-6"
+                    htmlFor="date"
+                  >
+                    Data
+                    <input
+                      className="border rounded-md p-2 text-black mt-2"
+                      id="date"
+                      type="date"
+                      name="date"
+                      value={date}
+                      min={new Date().toISOString().split("T")[0]}
+                      onChange={handleDateChange}
+                    />
+                  </label>
 
-                  {/* Coluna 3: Horários Disponíveis */}
+                  {/* Horários Disponíveis */}
                   {date !== "" && (
-                    <div className="col-span-2 mt-6 md:mt-0">
-                      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                    <div className="mt-6">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">
                         Horários Disponíveis
-                      </h2>
+                      </h3>
                       <div className="grid grid-cols-2 gap-2">
                         {horarios.map((h, index) => (
                           <button
                             onClick={() => handleHoraChange(h)}
                             key={index}
                             className={`rounded-md bg-gray-100 hover:bg-lightBackground text-md flex justify-center px-7 p-2 ${
-                              hora === h ? "bg-secondary hover:bg-secondary" : ""
+                              hora === h ? "bg-secondary hover:bg-secondary text-white" : ""
                             }`}
                           >
                             {h}
@@ -226,84 +231,84 @@ const numeroWhatsApp = "5585982390117"
                       </div>
                     </div>
                   )}
-
-                  {/* Coluna 4: Método de Pagamento */}
-                  {hora !== "" && (
-                    <div className="col-span-4 mt-6 md:mt-0">
-                      <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                        Escolha o Método de Pagamento
-                      </h2>
-
-                      <div className="grid grid-cols-2 md:grid md:grid-cols-4 gap-2">
-                        {metodosPagamento.map((metodoPagamento, index) => (
-                          <div
-                            key={index}
-                            onClick={() => handleMetodoChange(metodoPagamento.nome)}
-                            className={`w-full h-full gap-2 font-semibold p-6 border hover:border-secondary rounded-md flex flex-col items-center justify-center ${
-                              metodo === metodoPagamento.nome
-                                ? " bg-lightBackground border-primary"
-                                : ""
-                            }`}
-                          >
-                            {metodoPagamento.icone}
-                            <p>{metodoPagamento.nome}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Button de Agendamento */}
-                  {metodo !== "" && (
-                    <form onSubmit={handleSubmit} className="col-span-4 mt-6 md:mt-0">
-                      <div className="flex flex-col rounded bg-lightBackground border border-secondary p-4">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                          Resumo do Agendamento
-                        </h2>
-                        <p className="text-lg text-gray-600 font-medium">
-                          Serviços:{" "}
-                          {servicesSelecteds.map((index) => (
-                            <span className="text-base font-normal text-neutral">
-                              {services[index].title} {servicesSelecteds.length > 1 ? " - " : ""}
-                            </span>
-                          ))}
-                        </p>
-
-                        <p className="text-lg text-gray-600 font-medium">
-                          Valor Total:{" "}
-                          <span className="text-base font-normal text-neutral">
-                          R$ {calculateTotal().toFixed(2)}
-                          </span>
-                        </p>
-
-                        <p className="text-lg text-gray-600 font-medium">
-                          Data:{" "}
-                          <span className="text-base font-normal text-neutral">
-                            {formatDateToBR(date)}
-                          </span>
-                        </p>
-
-                        <p className="text-lg text-gray-600 font-medium">
-                          Horário:{" "}
-                          <span className="text-base font-normal text-neutral">
-                            {hora}
-                          </span>
-                        </p>
-                        <p className="text-lg text-gray-600 font-medium">
-                          Método de Pagamento:{" "}
-                          <span className="text-base font-normal text-neutral">
-                            {metodo}
-                          </span>
-                        </p>
-                      </div>
-
-                      <button type="submit" className="w-full rounded-md p-3 mt-4 bg-secondary hover:bg-secondaryHover text-white">
-                        Confirmar Agendamento
-                      </button>
-                    </form>
-                  )}
                 </div>
               </div>
+
+              {/* Método de Pagamento - Exibido abaixo quando horário for selecionado */}
+              {hora !== "" && (
+                <div className="mt-8">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                    Escolha o Método de Pagamento
+                  </h2>
+
+                  <div className="grid grid-cols-2 md:grid md:grid-cols-4 gap-2">
+                    {metodosPagamento.map((metodoPagamento, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleMetodoChange(metodoPagamento.nome)}
+                        className={`w-full h-full gap-2 font-semibold p-6 border hover:border-secondary rounded-md flex flex-col items-center justify-center ${
+                          metodo === metodoPagamento.nome
+                            ? " bg-lightBackground border-primary"
+                            : ""
+                        }`}
+                      >
+                        {metodoPagamento.icone}
+                        <p>{metodoPagamento.nome}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Resumo e Botão - Exibido quando método de pagamento for selecionado */}
+              {metodo !== "" && (
+                <form onSubmit={handleSubmit} className="mt-8">
+                  <div className="flex flex-col rounded bg-lightBackground border border-secondary p-4">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                      Resumo do Agendamento
+                    </h2>
+                    <p className="text-lg text-gray-600 font-medium">
+                      Serviços:{" "}
+                      {servicesSelecteds.map((index) => (
+                        <span className="text-base font-normal text-neutral">
+                          {services[index].title} {servicesSelecteds.length > 1 ? " - " : ""}
+                        </span>
+                      ))}
+                    </p>
+
+                    <p className="text-lg text-gray-600 font-medium">
+                      Valor Total:{" "}
+                      <span className="text-base font-normal text-neutral">
+                      R$ {calculateTotal().toFixed(2)}
+                      </span>
+                    </p>
+
+                    <p className="text-lg text-gray-600 font-medium">
+                      Data:{" "}
+                      <span className="text-base font-normal text-neutral">
+                        {formatDateToBR(date)}
+                      </span>
+                    </p>
+
+                    <p className="text-lg text-gray-600 font-medium">
+                      Horário:{" "}
+                      <span className="text-base font-normal text-neutral">
+                        {hora}
+                      </span>
+                    </p>
+                    <p className="text-lg text-gray-600 font-medium">
+                      Método de Pagamento:{" "}
+                      <span className="text-base font-normal text-neutral">
+                        {metodo}
+                      </span>
+                    </p>
+                  </div>
+
+                  <button type="submit" className="w-full rounded-md p-3 mt-4 bg-secondary hover:bg-secondaryHover text-white">
+                    Confirmar Agendamento
+                  </button>
+                </form>
+              )}
             </div>
           )}
         </div>
