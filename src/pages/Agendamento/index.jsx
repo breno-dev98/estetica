@@ -142,7 +142,7 @@ const numeroWhatsApp = "5585982390117"
 };
 
   return (
-    <div className="px-10 md:px-5 bg-gray-50" >
+    <div className="px-10 md:px-5 bg-gray-50">
       <Section title={"Agende seus Procedimentos"}>
         {services.map((service, index) => (
           <ServiceCard
