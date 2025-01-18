@@ -6,6 +6,9 @@ import Home from './pages/Home';
 import Agendamento from './pages/Agendamento';
 import Login from './pages/Admin/Login';
 import Dashboard from './pages/Admin/Dashboard';
+import Agendamentos from './pages/Admin/Agendamentos';
+import Clientes from './pages/Admin/Clientes';
+import Configuracoes from './pages/Admin/Configuracoes';
 
 function App() {
   return (
@@ -28,7 +31,9 @@ function App() {
           }
         >
           <Route path="dashboard" element={<Dashboard />} />
-          {/* Adicione mais rotas administrativas aqui */}
+          <Route path="agendamentos" element={<Agendamentos />} />
+          <Route path="clientes" element={<Clientes />} />
+          <Route path="configuracoes" element={<Configuracoes />} />
         </Route>
       </Routes>
     </BrowserRouter>
