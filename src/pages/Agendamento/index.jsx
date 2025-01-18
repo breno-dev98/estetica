@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import SectionAgendamento from "../../components/SectionAgendamento";
+import Endereco from "../../components/Endereco";
 import ServiceCard from "../../components/ServiceCard";
 import { services } from "../../database/services";
 import { SiPix } from "react-icons/si";
@@ -31,6 +32,9 @@ const Agendamento = () => {
 
   // Estado para armazenar os serviços selecionados
   const [servicesSelecteds, setServicesSelected] = useState([]);
+
+  const [enderecoCompleto, setEnderecoCompleto] = useState(false);
+  const [dadosEndereco, setDadosEndereco] = useState(null);
 
   const toggleSelected = (index) => {
     // Verifica se o índice já está nos selecionados. Se estiver, remove; se não, adiciona.
@@ -101,46 +105,59 @@ const Agendamento = () => {
   })
 
  const handleSubmit = (e) => {
-  e.preventDefault(); // Previne o comportamento padrão do formulário, que seria recarregar a página
+  e.preventDefault();
 
-  // Atualize os dados do formulário com os valores atuais dos estados
+  // Atualize os dados do formulário incluindo o endereço
   setFormData({
-    servicos: servicesSelecteds.map((index) => services[index].title).join(", "), // Lista os serviços selecionados
-    data: formatDateToBR(date), // Formata a data no formato BR
-    hora: hora, // Hora selecionada
-    preco: `R$ ${calculateTotal().toFixed(2)}`, // Calcula o valor total
-    metodo: metodo, // Método de pagamento
+    servicos: servicesSelecteds.map((index) => services[index].title).join(", "),
+    data: formatDateToBR(date),
+    hora: hora,
+    preco: `R$ ${calculateTotal().toFixed(2)}`,
+    metodo: metodo,
+    endereco: dadosEndereco // Adicionando o endereço aos dados do formulário
   });
 
-   // Cria a mensagem para enviar via WhatsApp
-   const mensagem = `
-   Agendamento Confirmado!
+  // Cria a mensagem para enviar via WhatsApp incluindo o endereço
+  const mensagem = `
+  Agendamento Confirmado!
 
-   Serviços: ${servicesSelecteds.map((index) => services[index].title).join(", ")}
-   Data: ${formatDateToBR(date)}
-   Hora: ${hora}
-   Valor Total: R$ ${calculateTotal().toFixed(2)}
-   Método de Pagamento: ${metodo}
- `;
+  Serviços: ${servicesSelecteds.map((index) => services[index].title).join(", ")}
+  Data: ${formatDateToBR(date)}
+  Hora: ${hora}
+  Valor Total: R$ ${calculateTotal().toFixed(2)}
+  Método de Pagamento: ${metodo}
 
-const numeroWhatsApp = "5585982390117"
+  Endereço de Atendimento:
+  Endereço: ${dadosEndereco.logradouro}, ${dadosEndereco.numero}${dadosEndereco.complemento ? `, ${dadosEndereco.complemento}` : ''}
+  Bairro: ${dadosEndereco.bairro}
+  Cidade: ${dadosEndereco.cidade} - ${dadosEndereco.uf}
+  `;
 
- // Cria o link do WhatsApp
- const link = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+  const numeroWhatsApp = "5585982390117"
 
- // Redireciona o usuário para o WhatsApp com a mensagem
- window.open(link, "_blank");
+  // Cria o link do WhatsApp
+  const link = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
 
-  // Aqui, você pode realizar outras ações, como enviar os dados para um servidor
-  console.log("Formulário enviado com os dados:", formData);
-  
-  // Exemplo de como você pode limpar o estado após o envio:
+  // Redireciona o usuário para o WhatsApp com a mensagem
+  window.open(link, "_blank");
+
+  // Limpa os estados após o envio
   setDate("");
   setHora("");
   setMetodo("");
   setServicesSelected([]);
+  setDadosEndereco(null); // Limpa os dados do endereço
+  setEnderecoCompleto(false); // Reseta o estado de endereço completo
   alert("Agendamento confirmado!");
 };
+
+  const handleEnderecoCompleto = (completo) => {
+    setEnderecoCompleto(completo);
+  };
+
+  const handleEnderecoChange = (endereco) => {
+    setDadosEndereco(endereco);
+  };
 
   return (
     <div className="min-h-full flex flex-col pb-8">
@@ -235,9 +252,9 @@ const numeroWhatsApp = "5585982390117"
                 </div>
               </div>
 
-              {/* Método de Pagamento - Exibido abaixo quando horário for selecionado */}
+              {/* Método de Pagamento */}
               {hora !== "" && (
-                <div className="mt-8">
+                <div className="mt-8 border-t pt-8">
                   <h2 className="text-2xl font-bold text-gray-800 mb-4">
                     Escolha o Método de Pagamento
                   </h2>
@@ -261,9 +278,19 @@ const numeroWhatsApp = "5585982390117"
                 </div>
               )}
 
-              {/* Resumo e Botão - Exibido quando método de pagamento for selecionado */}
+              {/* Componente Endereco - Exibido após selecionar o método de pagamento */}
               {metodo !== "" && (
-                <form onSubmit={handleSubmit} className="mt-8">
+                <div className="mt-8 border-t pt-8">
+                  <Endereco 
+                    onEnderecoCompleto={handleEnderecoCompleto}
+                    onEnderecoChange={handleEnderecoChange}
+                  />
+                </div>
+              )}
+
+              {/* Resumo e Botão - Exibido apenas quando o endereço estiver completo */}
+              {enderecoCompleto && (
+                <form onSubmit={handleSubmit} className="mt-8 border-t pt-8">
                   <div className="flex flex-col rounded bg-lightBackground border border-secondary p-4">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">
                       Resumo do Agendamento
@@ -303,6 +330,23 @@ const numeroWhatsApp = "5585982390117"
                         {metodo}
                       </span>
                     </p>
+
+                    {/* Seção de Endereço */}
+                    <div className="mt-4 border-t pt-4">
+                      <p className="text-lg text-gray-600 font-medium mb-2">
+                        Endereço de Atendimento:
+                      </p>
+                      <p className="text-base text-neutral">
+                        {dadosEndereco?.logradouro}, {dadosEndereco?.numero}
+                        {dadosEndereco?.complemento && `, ${dadosEndereco.complemento}`}
+                      </p>
+                      <p className="text-base text-neutral">
+                        {dadosEndereco?.bairro}
+                      </p>
+                      <p className="text-base text-neutral">
+                        {dadosEndereco?.cidade} - {dadosEndereco?.uf}
+                      </p>
+                    </div>
                   </div>
 
                   <button type="submit" className="w-full rounded-md p-3 mt-4 bg-secondary hover:bg-secondaryHover text-white">
