@@ -8,9 +8,9 @@ export const agendamentoService = {
     return new Date(date).toLocaleDateString("pt-BR");
   },
 
-  calculateTotal(servicesSelecteds, services) {
-    return servicesSelecteds.reduce((total, index) => {
-      const price = services[index].price.replace("R$", "").replace(",", ".");
+  calculateTotal(servicesSelecteds) {
+    return servicesSelecteds.reduce((total, service) => {
+      const price = service.price.replace("R$", "").replace(",", ".");
       return total + parseFloat(price);
     }, 0);
   },

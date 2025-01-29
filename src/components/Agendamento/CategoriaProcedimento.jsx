@@ -1,84 +1,68 @@
 import { useAgendamento } from '../../contexts/AgendamentoContext';
-import { HiOfficeBuilding, HiHome } from 'react-icons/hi';
+import { HiSparkles, HiUser } from 'react-icons/hi';
 
-export function TipoAtendimento() {
-  const { 
-    tipoAtendimento, 
-    setTipoAtendimento,
-    setServicesSelected,
-    setDate,
-    setHora,
-    setMetodo,
-    setEnderecoCompleto,
-    setDadosEndereco
-  } = useAgendamento();
+export function CategoriaProcedimento() {
+  const { categoria, setCategoria } = useAgendamento();
 
-  const handleTipoAtendimentoChange = (tipo) => {
-    setTipoAtendimento(tipo);
-    // Resetar apenas os estados relacionados ao agendamento
-    setServicesSelected([]);
-    setDate("");
-    setHora("");
-    setMetodo("");
-    setEnderecoCompleto(false);
-    setDadosEndereco(null);
+  const handleCategoriaChange = (novaCategoria) => {
+    setCategoria(novaCategoria);
   };
 
   return (
     <div>
       <h2 className="text-lg font-medium text-gray-900 mb-6">
-        Selecione o Tipo de Atendimento
+        Selecione a Categoria do Procedimento
       </h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div
           className={`relative rounded-lg border p-4 flex cursor-pointer focus:outline-none ${
-            tipoAtendimento === "clinica"
+            categoria === "facial"
               ? "border-primary bg-primary bg-opacity-5"
               : "border-gray-200"
           }`}
-          onClick={() => handleTipoAtendimentoChange("clinica")}
+          onClick={() => handleCategoriaChange("facial")}
         >
           <div className="flex items-center">
             <div className={`flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full ${
-              tipoAtendimento === "clinica" ? "bg-primary text-white" : "bg-gray-100"
+              categoria === "facial" ? "bg-primary text-white" : "bg-gray-100"
             }`}>
-              <HiOfficeBuilding className="h-6 w-6" />
+              <HiSparkles className="h-6 w-6" />
             </div>
             <div className="ml-4">
-              <div className="text-sm font-medium text-gray-900">Atendimento na Clínica</div>
+              <div className="text-sm font-medium text-gray-900">Procedimentos Faciais</div>
               <div className="text-sm text-gray-500">
-                Realize seu procedimento em nossa clínica especializada
+                Tratamentos especializados para o rosto
               </div>
             </div>
           </div>
           <div className={`absolute -inset-px rounded-lg border-2 pointer-events-none ${
-            tipoAtendimento === "clinica" ? "border-primary" : "border-transparent"
+            categoria === "facial" ? "border-primary" : "border-transparent"
           }`} aria-hidden="true" />
         </div>
 
         <div
           className={`relative rounded-lg border p-4 flex cursor-pointer focus:outline-none ${
-            tipoAtendimento === "domiciliar"
+            categoria === "corporal"
               ? "border-primary bg-primary bg-opacity-5"
               : "border-gray-200"
           }`}
-          onClick={() => handleTipoAtendimentoChange("domiciliar")}
+          onClick={() => handleCategoriaChange("corporal")}
         >
           <div className="flex items-center">
             <div className={`flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full ${
-              tipoAtendimento === "domiciliar" ? "bg-primary text-white" : "bg-gray-100"
+              categoria === "corporal" ? "bg-primary text-white" : "bg-gray-100"
             }`}>
-              <HiHome className="h-6 w-6" />
+              <HiUser className="h-6 w-6" />
             </div>
             <div className="ml-4">
-              <div className="text-sm font-medium text-gray-900">Atendimento Domiciliar</div>
+              <div className="text-sm font-medium text-gray-900">Procedimentos Corporais</div>
               <div className="text-sm text-gray-500">
-                Receba o atendimento no conforto da sua casa
+                Tratamentos especializados para o corpo
               </div>
             </div>
           </div>
           <div className={`absolute -inset-px rounded-lg border-2 pointer-events-none ${
-            tipoAtendimento === "domiciliar" ? "border-primary" : "border-transparent"
+            categoria === "corporal" ? "border-primary" : "border-transparent"
           }`} aria-hidden="true" />
         </div>
       </div>

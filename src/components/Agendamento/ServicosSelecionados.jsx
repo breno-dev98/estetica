@@ -54,10 +54,10 @@ export function ServicosSelecionados() {
 
     const formData = {
       tipoAtendimento,
-      servicos: servicesSelecteds.map((index) => services[index].title).join(", "),
+      servicos: servicesSelecteds.map((service) => service.title).join(", "),
       data: agendamentoService.formatDateToBR(date),
       hora,
-      preco: `R$ ${agendamentoService.calculateTotal(servicesSelecteds, services).toFixed(2)}`,
+      preco: `R$ ${agendamentoService.calculateTotal(servicesSelecteds).toFixed(2)}`,
       metodo,
       endereco: dadosEndereco
     };
@@ -78,16 +78,16 @@ export function ServicosSelecionados() {
             Serviços Selecionados:
           </h2>
           <ul className="list-inside list-disc">
-            {servicesSelecteds.map((index) => (
+            {servicesSelecteds.map((service, index) => (
               <li key={index} className="text-md text-gray-600">
-                {services[index].title} - {services[index].price}
+                {service.title} - {service.price}
               </li>
             ))}
           </ul>
           
           <div className="mt-4 p-4 bg-lightBackground rounded-md">
             <p className="text-lg font-bold text-gray-800">
-              Valor Total: R$ {agendamentoService.calculateTotal(servicesSelecteds, services).toFixed(2)}
+              Valor Total: R$ {agendamentoService.calculateTotal(servicesSelecteds).toFixed(2)}
             </p>
           </div>
         </div>
@@ -177,9 +177,9 @@ export function ServicosSelecionados() {
 
             <p className="text-lg text-gray-600 font-medium mt-2">
               Serviços:{" "}
-              {servicesSelecteds.map((index) => (
+              {servicesSelecteds.map((service, index) => (
                 <span key={index} className="text-base font-normal text-neutral">
-                  {services[index].title} {servicesSelecteds.length > 1 ? " - " : ""}
+                  {service.title} {servicesSelecteds.length > 1 ? " - " : ""}
                 </span>
               ))}
             </p>
@@ -187,7 +187,7 @@ export function ServicosSelecionados() {
             <p className="text-lg text-gray-600 font-medium">
               Valor Total:{" "}
               <span className="text-base font-normal text-neutral">
-                R$ {agendamentoService.calculateTotal(servicesSelecteds, services).toFixed(2)}
+                R$ {agendamentoService.calculateTotal(servicesSelecteds).toFixed(2)}
               </span>
             </p>
 
