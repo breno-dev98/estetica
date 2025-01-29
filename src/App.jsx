@@ -9,33 +9,36 @@ import Dashboard from './pages/Admin/Dashboard';
 import Agendamentos from './pages/Admin/Agendamentos';
 import Clientes from './pages/Admin/Clientes';
 import Configuracoes from './pages/Admin/Configuracoes';
+import { AgendamentoProvider } from './contexts/AgendamentoContext';
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Rotas públicas */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="agendamento" element={<Agendamento />} />
-        </Route>
+      <AgendamentoProvider>
+        <Routes>
+          {/* Rotas públicas */}
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="agendamento" element={<Agendamento />} />
+          </Route>
 
-        {/* Rotas administrativas */}
-        <Route path="/admin/login" element={<Login />} />
-        <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <AdminLayout />
-            </AdminRoute>
-          }
-        >
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="agendamentos" element={<Agendamentos />} />
-          <Route path="clientes" element={<Clientes />} />
-          <Route path="configuracoes" element={<Configuracoes />} />
-        </Route>
-      </Routes>
+          {/* Rotas administrativas */}
+          <Route path="/admin/login" element={<Login />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="agendamentos" element={<Agendamentos />} />
+            <Route path="clientes" element={<Clientes />} />
+            <Route path="configuracoes" element={<Configuracoes />} />
+          </Route>
+        </Routes>
+      </AgendamentoProvider>
     </BrowserRouter>
   );
 }

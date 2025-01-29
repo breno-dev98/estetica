@@ -30,7 +30,7 @@ const Header = () => {
   };
 
   return (
-    <header>
+    <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
       {/* Menu para Desktop */}
       {!isMobile && (
         <div className="bg-secondary fixed w-full">
