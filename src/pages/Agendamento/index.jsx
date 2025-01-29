@@ -5,6 +5,7 @@ import { ListaServicos } from '../../components/Agendamento/ListaServicos';
 import { ServicosSelecionados } from '../../components/Agendamento/ServicosSelecionados';
 import { useAgendamento } from '../../contexts/AgendamentoContext';
 import { AnamneseFacial } from '../../components/Agendamento/AnamneseFacial';
+import { AnamneseCorporal } from '../../components/Agendamento/AnamneseCorporal';
 
 const Agendamento = () => {
   const { 
@@ -59,7 +60,7 @@ const Agendamento = () => {
               {showAnamnese && (
                 <div className="bg-white overflow-hidden shadow rounded-lg relative z-10">
                   <div className="px-4 py-5 sm:p-6">
-                    <AnamneseFacial />
+                    {categoria === 'facial' ? <AnamneseFacial /> : <AnamneseCorporal />}
                   </div>
                 </div>
               )}

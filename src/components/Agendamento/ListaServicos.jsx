@@ -23,7 +23,10 @@ export function ListaServicos() {
   };
 
   const handleContinuar = () => {
-    if ((categoria === 'facial' || tipoAtendimento === 'domiciliar') && servicesSelecteds.length > 0) {
+    if (servicesSelecteds.length > 0 && 
+        (categoria === 'facial' || 
+         tipoAtendimento === 'domiciliar' || 
+         categoria === 'corporal')) {
       setShowAnamnese(true);
     }
   };
@@ -52,9 +55,7 @@ export function ListaServicos() {
         ))}
       </div>
 
-      {servicesSelecteds.length > 0 && 
-       (categoria === 'facial' || tipoAtendimento === 'domiciliar') && 
-       !anamnese && (
+      {servicesSelecteds.length > 0 && !anamnese && (
         <div className="mt-8 flex justify-center">
           <button
             onClick={handleContinuar}

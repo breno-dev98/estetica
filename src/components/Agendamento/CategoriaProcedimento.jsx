@@ -2,10 +2,26 @@ import { useAgendamento } from '../../contexts/AgendamentoContext';
 import { HiSparkles, HiUser } from 'react-icons/hi';
 
 export function CategoriaProcedimento() {
-  const { categoria, setCategoria } = useAgendamento();
+  const { 
+    categoria,
+    setCategoria, 
+    setServicesSelected, 
+    setAnamnese,
+    setShowAnamnese,
+    setEtapaAnamnese,
+    setDadosPessoais,
+    setQueixaPrincipal 
+  } = useAgendamento();
 
   const handleCategoriaChange = (novaCategoria) => {
+    // Reseta todos os estados relacionados ao formulário
     setCategoria(novaCategoria);
+    setServicesSelected([]);
+    setAnamnese(null);
+    setShowAnamnese(false);
+    setEtapaAnamnese(1);
+    setDadosPessoais(null);
+    setQueixaPrincipal("");
   };
 
   return (
