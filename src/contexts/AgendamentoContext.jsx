@@ -11,6 +11,11 @@ export function AgendamentoProvider({ children }) {
   const [metodo, setMetodo] = useState("");
   const [enderecoCompleto, setEnderecoCompleto] = useState(false);
   const [dadosEndereco, setDadosEndereco] = useState(null);
+  const [showAnamnese, setShowAnamnese] = useState(false);
+  const [anamnese, setAnamnese] = useState(null);
+  const [etapaAnamnese, setEtapaAnamnese] = useState(1);
+  const [dadosPessoais, setDadosPessoais] = useState(null);
+  const [queixaPrincipal, setQueixaPrincipal] = useState("");
 
   const resetForm = useCallback(() => {
     setTipoAtendimento("");
@@ -21,6 +26,11 @@ export function AgendamentoProvider({ children }) {
     setMetodo("");
     setEnderecoCompleto(false);
     setDadosEndereco(null);
+    setShowAnamnese(false);
+    setAnamnese(null);
+    setEtapaAnamnese(1);
+    setDadosPessoais(null);
+    setQueixaPrincipal("");
   }, []);
 
   return (
@@ -42,7 +52,17 @@ export function AgendamentoProvider({ children }) {
         setEnderecoCompleto,
         dadosEndereco,
         setDadosEndereco,
-        resetForm
+        resetForm,
+        showAnamnese,
+        setShowAnamnese,
+        anamnese,
+        setAnamnese,
+        etapaAnamnese,
+        setEtapaAnamnese,
+        dadosPessoais,
+        setDadosPessoais,
+        queixaPrincipal,
+        setQueixaPrincipal,
       }}
     >
       {children}

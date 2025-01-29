@@ -4,9 +4,16 @@ import { CategoriaProcedimento } from '../../components/Agendamento/CategoriaPro
 import { ListaServicos } from '../../components/Agendamento/ListaServicos';
 import { ServicosSelecionados } from '../../components/Agendamento/ServicosSelecionados';
 import { useAgendamento } from '../../contexts/AgendamentoContext';
+import { AnamneseFacial } from '../../components/Agendamento/AnamneseFacial';
 
 const Agendamento = () => {
-  const { tipoAtendimento, categoria, servicesSelecteds, resetForm } = useAgendamento();
+  const { 
+    tipoAtendimento, 
+    categoria, 
+    servicesSelecteds, 
+    resetForm,
+    showAnamnese 
+  } = useAgendamento();
 
   useEffect(() => {
     return () => {
@@ -40,7 +47,7 @@ const Agendamento = () => {
               )}
 
               {/* Lista de serviços */}
-              {categoria && (
+              {categoria && !showAnamnese && (
                 <div className="bg-white overflow-hidden shadow rounded-lg relative z-10">
                   <div className="px-4 py-5 sm:p-6">
                     <ListaServicos />
@@ -48,8 +55,26 @@ const Agendamento = () => {
                 </div>
               )}
 
+              {/* Formulário de Anamnese */}
+              {showAnamnese && (
+                <div className="bg-white overflow-hidden shadow rounded-lg relative z-10">
+                  <div className="px-4 py-5 sm:p-6">
+                    <AnamneseFacial />
+                  </div>
+                </div>
+              )}
+
               {/* Serviços selecionados e formulário */}
-              {servicesSelecteds.length > 0 && (
+              {servicesSelecteds.length > 0 && !showAnamnese && categoria === 'corporal' && (
+                <div className="bg-white overflow-hidden shadow rounded-lg relative z-10">
+                  <div className="px-4 py-5 sm:p-6">
+                    <ServicosSelecionados />
+                  </div>
+                </div>
+              )}
+
+              {/* Mostrar ServicosSelecionados após preenchimento da anamnese */}
+              {servicesSelecteds.length > 0 && categoria === 'facial' && !showAnamnese && (
                 <div className="bg-white overflow-hidden shadow rounded-lg relative z-10">
                   <div className="px-4 py-5 sm:p-6">
                     <ServicosSelecionados />

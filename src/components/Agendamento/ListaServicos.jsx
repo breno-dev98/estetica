@@ -3,7 +3,14 @@ import ServiceCard from '../ServiceCard';
 import { services } from '../../database/services';
 
 export function ListaServicos() {
-  const { categoria, servicesSelecteds, setServicesSelected } = useAgendamento();
+  const { 
+    categoria, 
+    servicesSelecteds, 
+    setServicesSelected,
+    setShowAnamnese,
+    anamnese,
+    tipoAtendimento
+  } = useAgendamento();
 
   const toggleSelected = (service) => {
     if (servicesSelecteds.includes(service)) {
@@ -12,6 +19,12 @@ export function ListaServicos() {
       );
     } else {
       setServicesSelected([...servicesSelecteds, service]);
+    }
+  };
+
+  const handleContinuar = () => {
+    if ((categoria === 'facial' || tipoAtendimento === 'domiciliar') && servicesSelecteds.length > 0) {
+      setShowAnamnese(true);
     }
   };
 
@@ -38,6 +51,19 @@ export function ListaServicos() {
           />
         ))}
       </div>
+
+      {servicesSelecteds.length > 0 && 
+       (categoria === 'facial' || tipoAtendimento === 'domiciliar') && 
+       !anamnese && (
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={handleContinuar}
+            className="bg-primary text-white px-8 py-3 rounded-md hover:bg-primaryHover transition-colors"
+          >
+            Continuar
+          </button>
+        </div>
+      )}
     </div>
   );
 } 
