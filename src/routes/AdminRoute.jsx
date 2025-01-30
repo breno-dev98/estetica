@@ -1,13 +1,12 @@
 import { Navigate } from 'react-router-dom';
 
-const AdminRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+export default function AdminRoute({ children }) {
+  const isAuthenticated = localStorage.getItem('admin_token');
 
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" />;
+    // Redireciona para o login se não estiver autenticado
+    return <Navigate to="/admin/login" replace />;
   }
 
   return children;
-};
-
-export default AdminRoute; 
+} 

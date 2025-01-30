@@ -1,6 +1,6 @@
 export const adminService = {
   async login(credentials) {
-    // Implementar autenticação real aqui
+    // Simulação de autenticação
     if (credentials.email === "admin@example.com" && credentials.password === "admin123") {
       const token = "fake-jwt-token";
       localStorage.setItem('admin_token', token);

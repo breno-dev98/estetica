@@ -4,6 +4,7 @@ import AdminLayout from './components/AdminLayout';
 import AdminRoute from './routes/AdminRoute';
 import Home from './pages/Home';
 import Agendamento from './pages/Agendamento';
+import Admin from './pages/Admin';
 import Login from './pages/Admin/Login';
 import Dashboard from './pages/Admin/Dashboard';
 import Agendamentos from './pages/Admin/Agendamentos';
@@ -27,21 +28,23 @@ function App() {
             </Route>
 
             {/* Rotas administrativas */}
-            <Route path="/admin/login" element={<Login />} />
-            <Route
-              path="/admin"
-              element={
-                <AdminRoute>
-                  <AdminLayout />
-                </AdminRoute>
-              }
-            >
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="agendamentos" element={<Agendamentos />} />
-              <Route path="clientes" element={<Clientes />} />
-              <Route path="anamneses" element={<Anamneses />} />
-              <Route path="servicos" element={<Servicos />} />
-              <Route path="configuracoes" element={<Configuracoes />} />
+            <Route path="/admin">
+              <Route index element={<Admin />} />
+              <Route path="login" element={<Login />} />
+              <Route
+                element={
+                  <AdminRoute>
+                    <AdminLayout />
+                  </AdminRoute>
+                }
+              >
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="agendamentos" element={<Agendamentos />} />
+                <Route path="clientes" element={<Clientes />} />
+                <Route path="anamneses" element={<Anamneses />} />
+                <Route path="servicos" element={<Servicos />} />
+                <Route path="configuracoes" element={<Configuracoes />} />
+              </Route>
             </Route>
           </Routes>
         </AgendamentoProvider>
