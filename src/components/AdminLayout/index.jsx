@@ -60,6 +60,24 @@ export default function AdminLayout() {
 
   return (
     <div className="flex h-screen bg-gray-100">
+      {/* Header Mobile */}
+      <div className="fixed top-0 left-0 right-0 h-16 bg-primary text-white z-30 lg:hidden">
+        <div className="flex items-center justify-between h-full px-4">
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-md hover:bg-primary-dark"
+          >
+            {isSidebarOpen ? (
+              <HiOutlineX className="w-6 h-6" />
+            ) : (
+              <HiOutlineMenu className="w-6 h-6" />
+            )}
+          </button>
+          <h1 className="text-xl font-semibold">Painel Admin</h1>
+          <div className="w-10" /> {/* Espaçador para centralizar o título */}
+        </div>
+      </div>
+
       {/* Overlay para mobile */}
       {isSidebarOpen && (
         <div
@@ -68,27 +86,17 @@ export default function AdminLayout() {
         />
       )}
 
-      {/* Botão do menu mobile */}
-      <button
-        onClick={toggleSidebar}
-        className="fixed top-4 left-4 z-30 lg:hidden bg-primary text-white p-2 rounded-md"
-      >
-        {isSidebarOpen ? (
-          <HiOutlineX className="w-6 h-6" />
-        ) : (
-          <HiOutlineMenu className="w-6 h-6" />
-        )}
-      </button>
-
       {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 w-64 bg-primary text-white transform transition-transform duration-300 ease-in-out z-30 lg:relative lg:translate-x-0 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="p-6">
+        {/* Logo/Título (visível apenas em desktop) */}
+        <div className="p-6 hidden lg:block">
           <h1 className="text-2xl font-bold">Admin Panel</h1>
         </div>
+
         <nav className="mt-8 px-4">
           {menuItems.map((item) => (
             <Link
@@ -117,7 +125,7 @@ export default function AdminLayout() {
       </div>
 
       {/* Conteúdo principal */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto lg:pt-0 pt-16"> {/* Adicionado padding-top para mobile */}
         <div className="p-2 lg:p-8">
           <Outlet />
         </div>
