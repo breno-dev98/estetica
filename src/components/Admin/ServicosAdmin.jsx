@@ -73,6 +73,19 @@ export function ServicosAdmin() {
     }
   };
 
+  const handleDurationChange = (e) => {
+    // Remove qualquer caractere não numérico
+    const numericValue = e.target.value.replace(/[^0-9]/g, '');
+    
+    // Formata o valor com "min" no final
+    const formattedValue = numericValue ? `${numericValue} min` : '';
+    
+    setFormData({
+      ...formData,
+      duration: formattedValue
+    });
+  };
+
   // Função para filtrar os serviços
   const getServicosFiltered = () => {
     if (!servicos) return [];
@@ -248,7 +261,7 @@ export function ServicosAdmin() {
                     <input
                       type="text"
                       value={formData.duration}
-                      onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                      onChange={handleDurationChange}
                       disabled={modalType === 'view'}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-colors disabled:bg-gray-100 disabled:text-gray-500"
                       placeholder="Ex: 60 min"

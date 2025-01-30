@@ -74,33 +74,51 @@ export function ServicosProvider({ children }) {
         corporal: servicos.corporal || []
       };
 
-      // Primeiro, encontra e remove o serviço de sua categoria atual
-      let servicoAntigo;
+      // Encontra o serviço e sua categoria atual
       let categoriaAntiga;
-      
       for (const categoria of ['facial', 'corporal']) {
-        const index = currentServicos[categoria].findIndex(s => s.id === id);
-        if (index !== -1) {
-          servicoAntigo = currentServicos[categoria][index];
+        const servicoExiste = currentServicos[categoria].find(s => s.id === id);
+        if (servicoExiste) {
           categoriaAntiga = categoria;
           break;
         }
       }
 
-      if (!servicoAntigo) throw new Error('Serviço não encontrado');
+      if (!categoriaAntiga) {
+        throw new Error('Serviço não encontrado');
+      }
 
-      // Remove o serviço da categoria antiga
-      const updatedServicos = {
-        ...currentServicos,
-        [categoriaAntiga]: currentServicos[categoriaAntiga].filter(s => s.id !== id),
-        [servicoData.category]: [
-          ...(currentServicos[servicoData.category] || []),
-          { ...servicoData, id }
-        ]
+      // Prepara o serviço atualizado
+      const servicoAtualizado = {
+        ...servicoData,
+        id, // Mantém o mesmo ID
+        price: parseFloat(servicoData.price)
       };
+
+      let updatedServicos;
+      if (categoriaAntiga === servicoData.category) {
+        // Se a categoria não mudou, apenas atualiza o serviço
+        updatedServicos = {
+          ...currentServicos,
+          [categoriaAntiga]: currentServicos[categoriaAntiga].map(s => 
+            s.id === id ? servicoAtualizado : s
+          )
+        };
+      } else {
+        // Se a categoria mudou, remove da antiga e adiciona na nova
+        updatedServicos = {
+          ...currentServicos,
+          [categoriaAntiga]: currentServicos[categoriaAntiga].filter(s => s.id !== id),
+          [servicoData.category]: [
+            ...currentServicos[servicoData.category],
+            servicoAtualizado
+          ]
+        };
+      }
 
       setServicos(updatedServicos);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedServicos));
+      return servicoAtualizado;
     } catch (error) {
       console.error('Erro ao atualizar serviço:', error);
       throw error;
@@ -109,11 +127,26 @@ export function ServicosProvider({ children }) {
 
   const deleteServico = async (id) => {
     try {
+      let servicoEncontrado = false;
       const updatedServicos = {
         ...servicos,
-        facial: (servicos.facial || []).filter(s => s.id !== id),
-        corporal: (servicos.corporal || []).filter(s => s.id !== id)
+        facial: [...servicos.facial],
+        corporal: [...servicos.corporal]
       };
+
+      // Procura e remove o serviço da categoria correta
+      for (const categoria of ['facial', 'corporal']) {
+        const index = updatedServicos[categoria].findIndex(s => s.id === id);
+        if (index !== -1) {
+          updatedServicos[categoria].splice(index, 1);
+          servicoEncontrado = true;
+          break;
+        }
+      }
+
+      if (!servicoEncontrado) {
+        throw new Error('Serviço não encontrado para exclusão');
+      }
 
       setServicos(updatedServicos);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedServicos));
