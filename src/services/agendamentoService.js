@@ -1,37 +1,44 @@
 export const agendamentoService = {
   isWeekday(date) {
     const day = date.getDay();
-    return day !== 5 && day !== 6;
+    return day !== 0 && day !== 6;
   },
 
   formatDateToBR(date) {
-    return new Date(date).toLocaleDateString("pt-BR");
+    if (!date) return '';
+    const [year, month, day] = date.split('-');
+    return `${day}/${month}/${year}`;
   },
 
-  calculateTotal(servicesSelecteds) {
-    return servicesSelecteds.reduce((total, service) => {
-      const price = service.price.replace("R$", "").replace(",", ".");
-      return total + parseFloat(price);
+  calculateTotal(services) {
+    return services.reduce((total, service) => {
+      // Garante que estamos trabalhando com números
+      const price = typeof service.price === 'number' 
+        ? service.price 
+        : parseFloat(service.price.replace('R$', '').replace(',', '.').trim());
+      return total + price;
     }, 0);
   },
 
   createWhatsAppMessage(formData) {
-    const mensagem = `
-    Agendamento Confirmado!
+    const message = `
+      *Novo Agendamento*
+      
+      Tipo de Atendimento: ${formData.tipoAtendimento === 'clinica' ? 'Clínica' : 'Domiciliar'}
+      Serviços: ${formData.servicos}
+      Data: ${formData.data}
+      Hora: ${formData.hora}
+      Valor Total: ${formData.preco}
+      Método de Pagamento: ${formData.metodo}
+      ${formData.tipoAtendimento === 'domiciliar' ? `
+      Endereço: 
+      ${formData.endereco.logradouro}, ${formData.endereco.numero}
+      ${formData.endereco.complemento ? formData.endereco.complemento + '\n' : ''}
+      ${formData.endereco.bairro}
+      ${formData.endereco.cidade} - ${formData.endereco.uf}
+      ` : ''}
+    `.trim().replace(/^ +/gm, '');
 
-    Tipo de Atendimento: ${formData.tipoAtendimento === "clinica" ? "Atendimento na Clínica" : "Atendimento Domiciliar"}
-    Serviços: ${formData.servicos}
-    Data: ${formData.data}
-    Hora: ${formData.hora}
-    Valor Total: ${formData.preco}
-    Método de Pagamento: ${formData.metodo}
-
-    Endereço de Atendimento:
-    Endereço: ${formData.endereco.logradouro}, ${formData.endereco.numero}${formData.endereco.complemento ? `, ${formData.endereco.complemento}` : ''}
-    Bairro: ${formData.endereco.bairro}
-    Cidade: ${formData.endereco.cidade} - ${formData.endereco.uf}
-    `;
-
-    return `https://wa.me/5585982390117?text=${encodeURIComponent(mensagem)}`;
+    return `https://wa.me/5585999999999?text=${encodeURIComponent(message)}`;
   }
 }; 

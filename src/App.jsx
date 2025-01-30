@@ -9,6 +9,8 @@ import Dashboard from './pages/Admin/Dashboard';
 import Agendamentos from './pages/Admin/Agendamentos';
 import Clientes from './pages/Admin/Clientes';
 import Configuracoes from './pages/Admin/Configuracoes';
+import Anamneses from './pages/Admin/Anamneses';
+import Servicos from './pages/Admin/Servicos';
 import { AgendamentoProvider } from './contexts/AgendamentoContext';
 
 function App() {
@@ -35,6 +37,8 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="agendamentos" element={<Agendamentos />} />
             <Route path="clientes" element={<Clientes />} />
+            <Route path="anamneses" element={<Anamneses />} />
+            <Route path="servicos" element={<Servicos />} />
             <Route path="configuracoes" element={<Configuracoes />} />
           </Route>
         </Routes>

@@ -174,6 +174,7 @@ export function AnamneseCorporal() {
                 name="historico_doencasCronicas"
                 autoComplete="off"
                 data-form-type="other"
+                value=""
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
               />
             </div>
@@ -187,6 +188,7 @@ export function AnamneseCorporal() {
                 name="historico_alergias"
                 autoComplete="off"
                 data-form-type="other"
+                value=""
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
               />
             </div>

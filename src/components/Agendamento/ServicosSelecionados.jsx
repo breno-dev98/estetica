@@ -4,6 +4,8 @@ import { agendamentoService } from '../../services/agendamentoService';
 import { SiPix } from "react-icons/si";
 import { FaCreditCard, FaMoneyBillAlt } from "react-icons/fa";
 import Endereco from '../Endereco';
+import { useState } from 'react';
+import { HiChevronDown, HiChevronUp } from 'react-icons/hi';
 
 export function ServicosSelecionados() {
   const {
@@ -23,6 +25,7 @@ export function ServicosSelecionados() {
     categoria,
     anamnese
   } = useAgendamento();
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const horarios = ["9:00", "10:00", "11:00", "12:00"];
   const metodosPagamento = [
@@ -93,83 +96,108 @@ export function ServicosSelecionados() {
     }
   };
 
+  const calculateTotal = (services) => {
+    return services.reduce((total, service) => {
+      // Verifica se o preço é uma string ou número
+      const price = typeof service.price === 'string' 
+        ? parseFloat(service.price.replace('R$', '').replace(',', '.').trim())
+        : service.price;
+      
+      return total + price;
+    }, 0);
+  };
+
   return (
     <div className="bg-background px-4 md:px-10 py-6 md:py-8 mt-8 rounded-md shadow-lg">
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Coluna 1: Lista de serviços selecionados */}
-        <div className="w-full md:w-1/2">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Serviços Selecionados:
-          </h2>
-          <ul className="list-inside list-disc">
-            {servicesSelecteds.map((service, index) => (
-              <li key={index} className="text-md text-gray-600">
-                {service.title} - {service.price}
-              </li>
-            ))}
-          </ul>
-          
-          <div className="mt-4 p-4 bg-lightBackground rounded-md">
-            <p className="text-lg font-bold text-gray-800">
-              Valor Total: R$ {agendamentoService.calculateTotal(servicesSelecteds).toFixed(2)}
-            </p>
-          </div>
-        </div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">
+          Resumo do Agendamento
+        </h2>
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          {isExpanded ? <HiChevronUp size={24} /> : <HiChevronDown size={24} />}
+        </button>
+      </div>
 
-        {/* Coluna 2: Escolher Data e Horário */}
-        {podeEscolherData && (
+      {isExpanded && (
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Coluna 1: Lista de serviços selecionados */}
           <div className="w-full md:w-1/2">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Escolha a Data e Horário
+              Serviços Selecionados:
             </h2>
-            <label className="text-md flex flex-col text-neutral font-semibold mb-6">
-              Data
-              <input
-                className="border rounded-md p-2 text-black mt-2"
-                type="date"
-                value={date}
-                min={new Date().toISOString().split("T")[0]}
-                onChange={handleDateChange}
-              />
-            </label>
-
-            {date && (
-              <div className="mt-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">
-                  Horários Disponíveis
-                </h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {horarios.map((h, index) => (
-                    <button
-                      onClick={() => setHora(h)}
-                      key={index}
-                      className={`rounded-md bg-gray-100 hover:bg-lightBackground text-md flex justify-center px-7 p-2 ${
-                        hora === h ? "bg-secondary hover:bg-secondary text-white" : ""
-                      }`}
-                    >
-                      {h}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            <ul className="list-inside list-disc">
+              {servicesSelecteds.map((service, index) => (
+                <li key={index} className="text-md text-gray-600">
+                  {service.title} - {service.price}
+                </li>
+              ))}
+            </ul>
+            
+            <div className="mt-4 p-4 bg-lightBackground rounded-md">
+              <p className="text-lg font-bold text-gray-800">
+                Valor Total: R$ {agendamentoService.calculateTotal(servicesSelecteds).toFixed(2)}
+              </p>
+            </div>
           </div>
-        )}
 
-        {!podeEscolherData && (categoria === 'facial' || tipoAtendimento === 'domiciliar') && (
-          <div className="w-full md:w-1/2">
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <p className="text-sm text-yellow-700">
-                    Para prosseguir com o agendamento, é necessário preencher a ficha de anamnese.
-                  </p>
+          {/* Coluna 2: Escolher Data e Horário */}
+          {podeEscolherData && (
+            <div className="w-full md:w-1/2">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                Escolha a Data e Horário
+              </h2>
+              <label className="text-md flex flex-col text-neutral font-semibold mb-6">
+                Data
+                <input
+                  className="border rounded-md p-2 text-black mt-2"
+                  type="date"
+                  value={date}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={handleDateChange}
+                />
+              </label>
+
+              {date && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">
+                    Horários Disponíveis
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {horarios.map((h, index) => (
+                      <button
+                        onClick={() => setHora(h)}
+                        key={index}
+                        className={`rounded-md bg-gray-100 hover:bg-lightBackground text-md flex justify-center px-7 p-2 ${
+                          hora === h ? "bg-secondary hover:bg-secondary text-white" : ""
+                        }`}
+                      >
+                        {h}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {!podeEscolherData && (categoria === 'facial' || tipoAtendimento === 'domiciliar') && (
+            <div className="w-full md:w-1/2">
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <div className="flex">
+                  <div className="ml-3">
+                    <p className="text-sm text-yellow-700">
+                      Para prosseguir com o agendamento, é necessário preencher a ficha de anamnese.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       {/* Método de Pagamento */}
       {hora && (

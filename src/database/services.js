@@ -1,48 +1,76 @@
 export const services = {
   facial: [
     {
-      title: "Limpeza de Pele",
-      description: "Tratamento completo para uma pele radiante e saudável.",
-      price: "R$ 150,00",
-      category: "facial"
+      title: "Peeling de Diamante",
+      description: "Tratamento de renovação celular e rejuvenescimento",
+      price: 80.00,
+      category: "facial",
+      duration: "50 min"
     },
     {
-      title: "Hidratação Facial",
-      description: "Rejuvenescimento e hidratação profunda da pele.",
-      price: "R$ 120,00",
-      category: "facial"
+      title: "Revitalização Facial",
+      description: "Tratamento para revitalizar e hidratar a pele",
+      price: 80.00,
+      category: "facial",
+      duration: "50 min"
     },
     {
-      title: "Peeling Químico",
-      description: "Redução de manchas e renovação celular.",
-      price: "R$ 250,00",
-      category: "facial"
+      title: "Limpeza de pele normal",
+      description: "Limpeza profunda com extração",
+      price: 130.00,
+      category: "facial",
+      duration: "90 min"
     },
     {
-      title: "Rejuvenescimento com Luz Pulsada",
-      description: "Melhora da textura e do tom da pele.",
-      price: "R$ 300,00",
-      category: "facial"
+      title: "Limpeza de pele + Altafrequencia",
+      description: "Limpeza profunda com tratamento de altafrequência",
+      price: 180.00,
+      category: "facial",
+      duration: "100 min"
+    },
+    {
+      title: "Limpeza de Pele + Peeling",
+      description: "Limpeza profunda combinada com peeling",
+      price: 200.00,
+      category: "facial",
+      duration: "120 min"
     }
   ],
   corporal: [
     {
-      title: "Massagem Modeladora",
-      description: "Modelagem corporal e redução de medidas.",
-      price: "R$ 180,00",
-      category: "corporal"
+      title: "Modeladora a Vacuo",
+      description: "Massagem modeladora com técnica a vácuo",
+      price: 100.00,
+      category: "corporal",
+      duration: "50 min"
     },
     {
-      title: "Depilação a Laser",
-      description: "Tecnologia avançada para resultados duradouros.",
-      price: "R$ 200,00",
-      category: "corporal"
+      title: "Massagem Relaxante",
+      description: "Massagem relaxante tradicional",
+      price: 110.00,
+      category: "corporal",
+      duration: "50 min"
     },
     {
-      title: "Drenagem Linfática",
-      description: "Técnica para eliminar toxinas e reduzir inchaços.",
-      price: "R$ 200,00",
-      category: "corporal"
+      title: "Massagem Relaxante + Ventosa",
+      description: "Massagem relaxante com terapia de ventosas",
+      price: 115.00,
+      category: "corporal",
+      duration: "60 min"
+    },
+    {
+      title: "Massagem Relaxante + Pedras Quentes",
+      description: "Massagem relaxante com pedras quentes",
+      price: 115.00,
+      category: "corporal",
+      duration: "60 min"
+    },
+    {
+      title: "Detox Corporal + Ultrassom",
+      description: "Tratamento detox com ultrassom",
+      price: 250.00,
+      category: "corporal",
+      duration: "90 min"
     }
   ]
 };
