@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useServicos } from '../../contexts/ServicosContext';
-import { HiPlus, HiPencil, HiTrash, HiEye } from 'react-icons/hi';
+import { HiPlus, HiPencil, HiTrash, HiEye, HiChevronUp, HiX } from 'react-icons/hi';
 
 export function ServicosAdmin() {
   const { servicos, addServico, updateServico, deleteServico } = useServicos();
@@ -9,6 +9,8 @@ export function ServicosAdmin() {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('add'); // 'add', 'edit', 'view'
   const [selectedCategoria, setSelectedCategoria] = useState('todos');
+  const [selectedServico, setSelectedServico] = useState(null);
+  const [showDrawer, setShowDrawer] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -180,18 +182,122 @@ export function ServicosAdmin() {
     );
   };
 
+  const handleRowClick = (servico) => {
+    setSelectedServico(servico);
+    setShowDrawer(true);
+  };
+
+  const ServicoDrawer = ({ servico, onClose }) => {
+    if (!servico) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
+        <div 
+          className="fixed inset-x-0 bottom-0 transform transition-transform duration-300 ease-in-out bg-white rounded-t-xl shadow-xl"
+          style={{ maxHeight: '85vh' }}
+        >
+          {/* Cabeçalho do Drawer */}
+          <div className="sticky top-0 bg-white border-b px-4 py-3 flex items-center justify-between rounded-t-xl">
+            <h3 className="text-lg font-semibold text-gray-800">Detalhes do Serviço</h3>
+            <button
+              onClick={onClose}
+              className="p-1 hover:bg-gray-100 rounded-full"
+            >
+              <HiX className="w-6 h-6 text-gray-500" />
+            </button>
+          </div>
+
+          {/* Conteúdo do Drawer */}
+          <div className="overflow-y-auto p-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-500">Nome</label>
+                <p className="mt-1 text-gray-900">{servico.title}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500">Categoria</label>
+                <p className="mt-1 capitalize text-gray-900">{servico.category}</p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-500">Descrição</label>
+              <p className="mt-1 text-gray-900">{servico.description}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-500">Preço</label>
+                <p className="mt-1 text-gray-900">R$ {servico.price.toFixed(2)}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500">Duração</label>
+                <p className="mt-1 text-gray-900">{servico.duration}</p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-500">Criado em</label>
+              <p className="mt-1 text-gray-900">
+                {servico.createdAt ? formatDateTime(servico.createdAt) : '-'}
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-500">Última modificação</label>
+              <p className="mt-1 text-gray-900">
+                {servico.updatedAt ? formatDateTime(servico.updatedAt) : '-'}
+              </p>
+            </div>
+
+            {servico.historico && servico.historico.length > 0 && (
+              <div className="mt-6">
+                <HistoricoModificacoes historico={servico.historico} />
+              </div>
+            )}
+          </div>
+
+          {/* Ações do Drawer */}
+          <div className="sticky bottom-0 bg-white border-t p-4 flex justify-end space-x-3">
+            <button
+              onClick={() => {
+                onClose();
+                handleOpenModal('edit', servico);
+              }}
+              className="px-4 py-2 text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors flex items-center"
+            >
+              <HiPencil className="w-5 h-5 mr-2" />
+              Editar
+            </button>
+            <button
+              onClick={() => {
+                onClose();
+                handleDelete(servico.id);
+              }}
+              className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors flex items-center"
+            >
+              <HiTrash className="w-5 h-5 mr-2" />
+              Excluir
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (loading) return <div>Carregando...</div>;
 
   return (
     <div className="bg-white rounded-lg shadow">
       <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h2 className="text-xl font-semibold">Gerenciar Serviços</h2>
+        {/* Header com filtros e botão de adicionar */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="w-full sm:w-auto">
+            <h2 className="text-xl font-semibold mb-2 sm:mb-0">Gerenciar Serviços</h2>
             <select
               value={selectedCategoria}
               onChange={(e) => setSelectedCategoria(e.target.value)}
-              className="mt-2 border rounded-md p-2"
+              className="w-full sm:w-auto mt-2 border rounded-md p-2"
             >
               <option value="todos">Todos os Serviços</option>
               <option value="facial">Facial</option>
@@ -200,96 +306,128 @@ export function ServicosAdmin() {
           </div>
           <button
             onClick={() => handleOpenModal('add')}
-            className="bg-primary text-white px-4 py-2 rounded-md flex items-center"
+            className="w-full sm:w-auto bg-primary text-white px-4 py-2 rounded-md flex items-center justify-center"
           >
             <HiPlus className="mr-2" /> Novo Serviço
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
-                  Serviço
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
-                  Categoria
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Descrição
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
-                  Preço
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
-                  Duração
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
-                  Criado em
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
-                  Modificado
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {servicosFiltrados.map((servico, index) => (
-                <tr key={servico.id || index} className="hover:bg-gray-50">
-                  <td className="px-4 py-4 whitespace-nowrap">{servico.title}</td>
-                  <td className="px-4 py-4 capitalize whitespace-nowrap">{servico.category}</td>
-                  <td className="px-4 py-4">
-                    <div className="line-clamp-2">{servico.description}</div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    R$ {servico.price.toFixed(2)}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">{servico.duration}</td>
-                  <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
-                    {servico.createdAt ? formatDateTime(servico.createdAt) : '-'}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
-                    {servico.updatedAt ? formatDateTime(servico.updatedAt) : '-'}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="flex items-center justify-center space-x-3">
-                      <button
-                        onClick={() => handleOpenModal('view', servico)}
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
-                        title="Visualizar"
-                      >
-                        <HiEye className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleOpenModal('edit', servico)}
-                        className="text-yellow-600 hover:text-yellow-800 transition-colors"
-                        title="Editar"
-                      >
-                        <HiPencil className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(servico.id)}
-                        className="text-red-600 hover:text-red-800 transition-colors"
-                        title="Excluir"
-                      >
-                        <HiTrash className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </td>
+        <div className="overflow-x-auto -mx-6">
+          <div className="inline-block min-w-full align-middle">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Serviço
+                  </th>
+                  <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Categoria
+                  </th>
+                  <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Descrição
+                  </th>
+                  <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Preço
+                  </th>
+                  <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Duração
+                  </th>
+                  <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Criado em
+                  </th>
+                  <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Última Modificação
+                  </th>
+                  <th className="px-3 sm:px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Ações
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {servicosFiltrados.map((servico) => (
+                  <tr
+                    key={servico.id}
+                    onClick={() => handleRowClick(servico)}
+                    className="hover:bg-gray-50 cursor-pointer sm:cursor-default"
+                  >
+                    <td className="px-3 sm:px-4 py-4 text-sm">
+                      <div className="truncate max-w-[150px] sm:max-w-[200px]">{servico.title}</div>
+                    </td>
+                    <td className="hidden sm:table-cell px-4 py-4 text-sm capitalize">
+                      {servico.category}
+                    </td>
+                    <td className="hidden sm:table-cell px-4 py-4 text-sm">
+                      <div className="truncate max-w-[200px]">{servico.description}</div>
+                    </td>
+                    <td className="hidden sm:table-cell px-4 py-4 text-sm">
+                      R$ {servico.price.toFixed(2)}
+                    </td>
+                    <td className="hidden sm:table-cell px-4 py-4 text-sm">
+                      {servico.duration}
+                    </td>
+                    <td className="hidden lg:table-cell px-4 py-4 text-sm text-gray-500">
+                      {servico.createdAt ? formatDateTime(servico.createdAt) : '-'}
+                    </td>
+                    <td className="hidden lg:table-cell px-4 py-4 text-sm text-gray-500">
+                      {servico.updatedAt ? formatDateTime(servico.updatedAt) : '-'}
+                    </td>
+                    <td className="px-3 sm:px-4 py-4 text-sm text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenModal('view', servico);
+                          }}
+                          className="text-blue-600 hover:text-blue-800 p-1 hidden sm:block"
+                        >
+                          <HiEye className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenModal('edit', servico);
+                          }}
+                          className="text-yellow-600 hover:text-yellow-800 p-1"
+                        >
+                          <HiPencil className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(servico.id);
+                          }}
+                          className="text-red-600 hover:text-red-800 p-1"
+                        >
+                          <HiTrash className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Drawer apenas para mobile */}
+      {showDrawer && (
+        <div className="lg:hidden">
+          <ServicoDrawer
+            servico={selectedServico}
+            onClose={() => {
+              setShowDrawer(false);
+              setSelectedServico(null);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Modal existente para adicionar/editar */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full m-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-semibold text-gray-800">
                 {modalType === 'add' ? 'Novo Serviço' : 
@@ -406,6 +544,7 @@ export function ServicosAdmin() {
                 )}
               </div>
             </form>
+            </div>
           </div>
         </div>
       )}
