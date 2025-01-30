@@ -7,7 +7,7 @@ import Agendamento from './pages/Agendamento';
 import Admin from './pages/Admin';
 import Login from './pages/Admin/Login';
 import Dashboard from './pages/Admin/Dashboard';
-import Agendamentos from './pages/Admin/Agendamentos';
+import Agendamentos from './pages/admin/Agendamentos';
 import Clientes from './pages/Admin/Clientes';
 import Configuracoes from './pages/Admin/Configuracoes';
 import Anamneses from './pages/Admin/Anamneses';
