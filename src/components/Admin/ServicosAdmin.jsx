@@ -102,6 +102,84 @@ export function ServicosAdmin() {
   // Renderiza a lista de serviços
   const servicosFiltrados = getServicosFiltered();
 
+  const formatDateTime = (isoString) => {
+    return new Date(isoString).toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+
+  const HistoricoModificacoes = ({ historico }) => {
+    if (!historico || historico.length === 0) {
+      return <p className="text-gray-500 italic">Nenhuma modificação registrada</p>;
+    }
+
+    const formatarValor = (key, valor) => {
+      switch (key) {
+        case 'price':
+          return `R$ ${parseFloat(valor).toFixed(2)}`;
+        case 'category':
+          return valor.charAt(0).toUpperCase() + valor.slice(1);
+        default:
+          return valor;
+      }
+    };
+
+    const traduzirCampo = (campo) => {
+      const traducoes = {
+        title: 'Nome',
+        description: 'Descrição',
+        price: 'Preço',
+        duration: 'Duração',
+        category: 'Categoria'
+      };
+      return traducoes[campo] || campo;
+    };
+
+    return (
+      <div className="mt-4">
+        <h4 className="text-lg font-medium text-gray-700 mb-3">Histórico de Modificações</h4>
+        <div className="space-y-4">
+          {historico.map((mod, index) => (
+            <div key={index} className="border rounded-lg p-4 bg-gray-50">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-600">
+                  {new Date(mod.data).toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                  })}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {Object.entries(mod.alteracoes).map(([campo, { de, para }]) => (
+                  <div key={campo} className="text-sm">
+                    <span className="font-medium">{traduzirCampo(campo)}:</span>
+                    <div className="ml-4 text-gray-600">
+                      <div className="flex items-center">
+                        <span className="text-red-500">- {formatarValor(campo, de)}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-green-500">+ {formatarValor(campo, para)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   if (loading) return <div>Carregando...</div>;
 
   return (
@@ -129,56 +207,77 @@ export function ServicosAdmin() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full">
+          <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr className="bg-gray-50">
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
                   Serviço
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                   Categoria
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Descrição
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
                   Preço
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                   Duração
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                  Criado em
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                  Modificado
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
                   Ações
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {servicosFiltrados.map((servico, index) => (
-                <tr key={servico.id || index}>
-                  <td className="px-6 py-4">{servico.title}</td>
-                  <td className="px-6 py-4 capitalize">{servico.category}</td>
-                  <td className="px-6 py-4">{servico.description}</td>
-                  <td className="px-6 py-4">R$ {servico.price.toFixed(2)}</td>
-                  <td className="px-6 py-4">{servico.duration}</td>
-                  <td className="px-6 py-4 space-x-2">
-                    <button
-                      onClick={() => handleOpenModal('view', servico)}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      <HiEye className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleOpenModal('edit', servico)}
-                      className="text-yellow-600 hover:text-yellow-800"
-                    >
-                      <HiPencil className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(servico.id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <HiTrash className="w-5 h-5" />
-                    </button>
+                <tr key={servico.id || index} className="hover:bg-gray-50">
+                  <td className="px-4 py-4 whitespace-nowrap">{servico.title}</td>
+                  <td className="px-4 py-4 capitalize whitespace-nowrap">{servico.category}</td>
+                  <td className="px-4 py-4">
+                    <div className="line-clamp-2">{servico.description}</div>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    R$ {servico.price.toFixed(2)}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap">{servico.duration}</td>
+                  <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    {servico.createdAt ? formatDateTime(servico.createdAt) : '-'}
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    {servico.updatedAt ? formatDateTime(servico.updatedAt) : '-'}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="flex items-center justify-center space-x-3">
+                      <button
+                        onClick={() => handleOpenModal('view', servico)}
+                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                        title="Visualizar"
+                      >
+                        <HiEye className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleOpenModal('edit', servico)}
+                        className="text-yellow-600 hover:text-yellow-800 transition-colors"
+                        title="Editar"
+                      >
+                        <HiPencil className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(servico.id)}
+                        className="text-red-600 hover:text-red-800 transition-colors"
+                        title="Excluir"
+                      >
+                        <HiTrash className="w-5 h-5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -190,7 +289,7 @@ export function ServicosAdmin() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full m-4">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full m-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-semibold text-gray-800">
                 {modalType === 'add' ? 'Novo Serviço' : 
@@ -284,6 +383,10 @@ export function ServicosAdmin() {
                   </select>
                 </div>
               </div>
+
+              {modalType === 'view' && (
+                <HistoricoModificacoes historico={formData.historico} />
+              )}
 
               <div className="flex justify-end space-x-3 pt-6 border-t">
                 <button

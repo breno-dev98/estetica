@@ -40,10 +40,14 @@ export function ServicosProvider({ children }) {
   const addServico = async (servicoData) => {
     try {
       const newId = Date.now().toString();
+      const now = new Date().toISOString();
+      
       const newServico = {
         ...servicoData,
         id: newId,
-        price: parseFloat(servicoData.price)
+        price: parseFloat(servicoData.price),
+        createdAt: now,
+        updatedAt: now
       };
 
       const updatedServicos = {
@@ -58,7 +62,7 @@ export function ServicosProvider({ children }) {
 
       setServicos(updatedServicos);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedServicos));
-      return newServico; // Retorna o serviço criado
+      return newServico;
     } catch (error) {
       console.error('Erro ao adicionar serviço:', error);
       throw error;
@@ -67,18 +71,19 @@ export function ServicosProvider({ children }) {
 
   const updateServico = async (id, servicoData) => {
     try {
-      // Garante que todas as categorias existam
       const currentServicos = {
         ...servicos,
         facial: servicos.facial || [],
         corporal: servicos.corporal || []
       };
 
-      // Encontra o serviço e sua categoria atual
+      let servicoAntigo;
       let categoriaAntiga;
+      
       for (const categoria of ['facial', 'corporal']) {
         const servicoExiste = currentServicos[categoria].find(s => s.id === id);
         if (servicoExiste) {
+          servicoAntigo = servicoExiste;
           categoriaAntiga = categoria;
           break;
         }
@@ -88,16 +93,31 @@ export function ServicosProvider({ children }) {
         throw new Error('Serviço não encontrado');
       }
 
-      // Prepara o serviço atualizado
+      // Cria um registro da modificação
+      const modificacao = {
+        data: new Date().toISOString(),
+        alteracoes: Object.entries(servicoData).reduce((acc, [key, newValue]) => {
+          if (servicoAntigo[key] !== newValue && key !== 'id' && key !== 'createdAt' && key !== 'updatedAt') {
+            acc[key] = {
+              de: servicoAntigo[key],
+              para: newValue
+            };
+          }
+          return acc;
+        }, {})
+      };
+
       const servicoAtualizado = {
         ...servicoData,
-        id, // Mantém o mesmo ID
-        price: parseFloat(servicoData.price)
+        id,
+        price: parseFloat(servicoData.price),
+        createdAt: servicoAntigo.createdAt,
+        updatedAt: new Date().toISOString(),
+        historico: [...(servicoAntigo.historico || []), modificacao]
       };
 
       let updatedServicos;
       if (categoriaAntiga === servicoData.category) {
-        // Se a categoria não mudou, apenas atualiza o serviço
         updatedServicos = {
           ...currentServicos,
           [categoriaAntiga]: currentServicos[categoriaAntiga].map(s => 
@@ -105,7 +125,6 @@ export function ServicosProvider({ children }) {
           )
         };
       } else {
-        // Se a categoria mudou, remove da antiga e adiciona na nova
         updatedServicos = {
           ...currentServicos,
           [categoriaAntiga]: currentServicos[categoriaAntiga].filter(s => s.id !== id),
