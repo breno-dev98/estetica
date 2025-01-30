@@ -44,12 +44,25 @@ export function AnamneseCorporal() {
       }
     };
 
-    setAnamnese({
+    const anamnese = {
+      id: Date.now().toString(), // ID único para a anamnese
+      tipo: 'corporal',
       dadosPessoais,
-      historicoSaude
-    });
+      historicoSaude,
+      dataCriacao: new Date().toISOString()
+    };
 
-    setShowAnamnese(false);
+    // Salvar no localStorage
+    try {
+      const anamneseCorporalSalva = JSON.parse(localStorage.getItem('anamneseCorporal') || '[]');
+      anamneseCorporalSalva.push(anamnese);
+      localStorage.setItem('anamneseCorporal', JSON.stringify(anamneseCorporalSalva));
+      
+      setAnamnese(anamnese);
+      setShowAnamnese(false);
+    } catch (error) {
+      console.error('Erro ao salvar anamnese corporal:', error);
+    }
   };
 
   if (etapaAnamnese === 1) {

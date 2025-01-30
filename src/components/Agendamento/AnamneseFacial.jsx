@@ -63,13 +63,26 @@ export function AnamneseFacial() {
       disturbioOcular: e.target.pergunta9.value === "S"
     };
 
-    setAnamnese({
+    const anamnese = {
+      id: Date.now().toString(), // ID único para a anamnese
+      tipo: 'facial',
       dadosPessoais,
       queixaPrincipal,
-      informacoesPessoais
-    });
+      informacoesPessoais,
+      dataCriacao: new Date().toISOString()
+    };
 
-    setShowAnamnese(false); // Fecha o formulário de anamnese
+    // Salvar no localStorage
+    try {
+      const anamneseFacialSalva = JSON.parse(localStorage.getItem('anamneseFacial') || '[]');
+      anamneseFacialSalva.push(anamnese);
+      localStorage.setItem('anamneseFacial', JSON.stringify(anamneseFacialSalva));
+      
+      setAnamnese(anamnese);
+      setShowAnamnese(false);
+    } catch (error) {
+      console.error('Erro ao salvar anamnese facial:', error);
+    }
   };
 
   if (etapaAnamnese === 1) {

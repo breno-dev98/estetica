@@ -190,6 +190,33 @@ const Agendamentos = () => {
 const AppointmentDrawer = ({ appointment, onClose, onUpdateStatus }) => {
   if (!appointment) return null;
 
+  console.log('Appointment:', appointment);
+
+  // Função para pegar o nome do cliente da anamnese
+  const getNomeCliente = () => {
+    try {
+      // Primeiro tenta pegar o nome diretamente do agendamento
+      if (appointment.cliente) {
+        return appointment.cliente;
+      }
+
+      // Se não tiver, busca na anamnese correspondente
+      const anamneseKey = appointment.categoria === 'facial' ? 'anamneseFacial' : 'anamneseCorporal';
+      const anamneses = JSON.parse(localStorage.getItem(anamneseKey) || '[]');
+      
+      // Busca a anamnese pelo ID salvo no agendamento
+      const anamnese = anamneses.find(a => a.id === appointment.anamneseId);
+      
+      return anamnese?.nome || anamnese?.nomeCompleto || 'Nome não informado';
+    } catch (error) {
+      console.error('Erro ao buscar nome do cliente:', error);
+      return 'Nome não encontrado';
+    }
+  };
+
+  const nomeCliente = getNomeCliente();
+  console.log('Nome do cliente:', nomeCliente);
+
   const actions = (
     <>
       {appointment.status === 'pendente' && (
@@ -228,6 +255,10 @@ const AppointmentDrawer = ({ appointment, onClose, onUpdateStatus }) => {
     >
       <DrawerField label="ID do Agendamento">
         {appointment.id}
+      </DrawerField>
+
+      <DrawerField label="Cliente">
+        {nomeCliente || 'Nome não informado'}
       </DrawerField>
 
       <DrawerField label="Serviços">

@@ -24,7 +24,8 @@ export function ServicosSelecionados() {
     resetForm,
     tipoAtendimento,
     categoria,
-    anamnese
+    anamnese,
+    name
   } = useAgendamento();
   const [isExpanded, setIsExpanded] = useState(true);
   const [showConfirmacao, setShowConfirmacao] = useState(false);
@@ -57,19 +58,25 @@ export function ServicosSelecionados() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Gerar ID de 7 dígitos
     const generateShortId = () => {
       return Math.floor(1000000 + Math.random() * 9000000).toString().substring(0, 7);
     };
 
     const newId = generateShortId();
 
+    // Buscar a anamnese correspondente
+    const anamneseKey = categoria === 'facial' ? 'anamneseFacial' : 'anamneseCorporal';
+    const anamneses = JSON.parse(localStorage.getItem(anamneseKey) || '[]');
+    const ultimaAnamnese = anamneses[anamneses.length - 1];
+
     const appointment = {
       id: newId,
+      cliente: ultimaAnamnese?.dadosPessoais?.nome,
       tipoAtendimento,
+      categoria,
       servicos: servicesSelecteds.map((service) => service.title),
       data: agendamentoService.formatDateToBR(date),
       hora,
@@ -77,7 +84,8 @@ export function ServicosSelecionados() {
       metodo,
       endereco: dadosEndereco,
       status: 'pendente',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      anamneseId: ultimaAnamnese?.id // Relacionamento com a anamnese
     };
 
     try {
