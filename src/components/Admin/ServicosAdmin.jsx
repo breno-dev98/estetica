@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { adminService } from '../../services/adminService';
+import { useServicos } from '../../contexts/ServicosContext';
 import { HiPlus, HiPencil, HiTrash, HiEye } from 'react-icons/hi';
 
 export function ServicosAdmin() {
-  const [servicos, setServicos] = useState({});
-  const [loading, setLoading] = useState(true);
+  const { servicos, addServico, updateServico, deleteServico } = useServicos();
+  const [loading, setLoading] = useState(false);
   const [editingServico, setEditingServico] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('add'); // 'add', 'edit', 'view'
-  const [selectedCategoria, setSelectedCategoria] = useState('facial');
+  const [selectedCategoria, setSelectedCategoria] = useState('todos');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -17,21 +17,6 @@ export function ServicosAdmin() {
     duration: '',
     category: 'facial'
   });
-
-  useEffect(() => {
-    loadServicos();
-  }, []);
-
-  const loadServicos = async () => {
-    try {
-      const data = await adminService.getServicos();
-      setServicos(data);
-    } catch (error) {
-      console.error('Erro ao carregar serviços:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOpenModal = (type, servico = null) => {
     setModalType(type);
@@ -43,7 +28,7 @@ export function ServicosAdmin() {
         description: '',
         price: '',
         duration: '',
-        category: selectedCategoria
+        category: selectedCategoria === 'todos' ? 'facial' : selectedCategoria
       });
     }
     setShowModal(true);
@@ -51,29 +36,58 @@ export function ServicosAdmin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
+      const servicoData = {
+        ...formData,
+        price: parseFloat(formData.price)
+      };
+
       if (modalType === 'add') {
-        await adminService.addServico(formData);
+        await addServico(servicoData);
       } else if (modalType === 'edit') {
-        await adminService.updateServico(formData.id, formData);
+        await updateServico(formData.id, servicoData);
       }
-      loadServicos();
       setShowModal(false);
+      // Força uma re-renderização
+      setSelectedCategoria(prev => prev === 'todos' ? 'todos' : servicoData.category);
     } catch (error) {
       console.error('Erro ao salvar serviço:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este serviço?')) {
+      setLoading(true);
       try {
-        await adminService.deleteServico(id);
-        loadServicos();
+        await deleteServico(id);
+        // Força uma re-renderização
+        setSelectedCategoria(prev => prev);
       } catch (error) {
         console.error('Erro ao excluir serviço:', error);
+      } finally {
+        setLoading(false);
       }
     }
   };
+
+  // Função para filtrar os serviços
+  const getServicosFiltered = () => {
+    if (!servicos) return [];
+    
+    if (selectedCategoria === 'todos') {
+      return [
+        ...(servicos.facial || []),
+        ...(servicos.corporal || [])
+      ];
+    }
+    return servicos[selectedCategoria] || [];
+  };
+
+  // Renderiza a lista de serviços
+  const servicosFiltrados = getServicosFiltered();
 
   if (loading) return <div>Carregando...</div>;
 
@@ -88,6 +102,7 @@ export function ServicosAdmin() {
               onChange={(e) => setSelectedCategoria(e.target.value)}
               className="mt-2 border rounded-md p-2"
             >
+              <option value="todos">Todos os Serviços</option>
               <option value="facial">Facial</option>
               <option value="corporal">Corporal</option>
             </select>
@@ -108,6 +123,9 @@ export function ServicosAdmin() {
                   Serviço
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Categoria
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Descrição
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -122,9 +140,10 @@ export function ServicosAdmin() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {servicos[selectedCategoria]?.map((servico) => (
-                <tr key={servico.id}>
+              {servicosFiltrados.map((servico, index) => (
+                <tr key={servico.id || index}>
                   <td className="px-6 py-4">{servico.title}</td>
+                  <td className="px-6 py-4 capitalize">{servico.category}</td>
                   <td className="px-6 py-4">{servico.description}</td>
                   <td className="px-6 py-4">R$ {servico.price.toFixed(2)}</td>
                   <td className="px-6 py-4">{servico.duration}</td>

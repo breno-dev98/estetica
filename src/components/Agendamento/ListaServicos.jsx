@@ -3,8 +3,10 @@ import { useAgendamento } from '../../contexts/AgendamentoContext';
 import ServiceCard from '../ServiceCard';
 import { services } from '../../database/services';
 import { HiChevronDown, HiChevronUp } from 'react-icons/hi';
+import { useServicos } from '../../contexts/ServicosContext';
 
 export function ListaServicos() {
+  const { servicos } = useServicos();
   const { 
     categoria, 
     servicesSelecteds, 
@@ -54,7 +56,7 @@ export function ListaServicos() {
       {isExpanded && (
         <>
           <div className="flex flex-wrap gap-4 justify-center max-w-[1400px] mx-auto">
-            {services[categoria].map((service, index) => (
+            {servicos[categoria]?.map((service, index) => (
               <ServiceCard
                 key={index}
                 className="md:w-[calc(33.33%-1rem)] xl:w-[calc(25%-1rem)] md:h-56"
