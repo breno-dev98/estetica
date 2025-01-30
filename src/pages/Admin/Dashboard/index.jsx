@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { FaCalendarAlt, FaUsers, FaBell, FaChartLine, FaCheck } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaCalendarAlt, FaUsers, FaChartLine } from 'react-icons/fa';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -8,48 +8,6 @@ const Dashboard = () => {
     clientesTotal: 2,
     faturamentoMes: 250.00
   });
-
-  const [notificacoes, setNotificacoes] = useState([
-    {
-      id: 1,
-      titulo: 'Novo agendamento',
-      mensagem: 'Cliente Maria agendou para hoje às 14h',
-      lida: false,
-      horario: '10:30'
-    },
-    {
-      id: 2,
-      titulo: 'Agendamento aprovado',
-      mensagem: 'Agendamento de João foi aprovado',
-      lida: false,
-      horario: '09:15'
-    }
-  ]);
-
-  const [showNotificacoes, setShowNotificacoes] = useState(false);
-  const notificacoesRef = useRef(null);
-
-  // Fecha o dropdown quando clicar fora
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (notificacoesRef.current && !notificacoesRef.current.contains(event.target)) {
-        setShowNotificacoes(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const marcarComoLida = (id) => {
-    setNotificacoes(notificacoes.map(notif => 
-      notif.id === id ? { ...notif, lida: true } : notif
-    ));
-  };
-
-  const marcarTodasComoLidas = () => {
-    setNotificacoes(notificacoes.map(notif => ({ ...notif, lida: true })));
-  };
 
   const [agendamentosRecentes, setAgendamentosRecentes] = useState([
     {
@@ -78,70 +36,7 @@ const Dashboard = () => {
 
   return (
     <div className="p-6">
-      {/* Cabeçalho com Notificações Dropdown */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-        <div className="relative" ref={notificacoesRef}>
-          <button 
-            onClick={() => setShowNotificacoes(!showNotificacoes)}
-            className="relative"
-          >
-            <FaBell className="text-2xl text-gray-600 cursor-pointer hover:text-gray-800" />
-            {notificacoes.some(n => !n.lida) && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                {notificacoes.filter(n => !n.lida).length}
-              </span>
-            )}
-          </button>
-
-          {/* Dropdown de Notificações */}
-          {showNotificacoes && (
-            <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50">
-              <div className="p-4 border-b">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-semibold">Notificações</h3>
-                  <button 
-                    onClick={marcarTodasComoLidas}
-                    className="text-sm text-primary hover:text-primaryHover"
-                  >
-                    Marcar todas como lidas
-                  </button>
-                </div>
-              </div>
-              <div className="max-h-96 overflow-y-auto">
-                {notificacoes.length > 0 ? (
-                  notificacoes.map((notificacao) => (
-                    <div 
-                      key={notificacao.id} 
-                      className={`p-4 border-b hover:bg-gray-50 cursor-pointer ${
-                        !notificacao.lida ? 'bg-blue-50' : ''
-                      }`}
-                      onClick={() => marcarComoLida(notificacao.id)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="font-semibold text-sm">{notificacao.titulo}</h4>
-                          <p className="text-sm text-gray-600">{notificacao.mensagem}</p>
-                        </div>
-                        {!notificacao.lida && (
-                          <span className="text-xs text-primary">
-                            <FaCheck />
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs text-gray-500 mt-1">{notificacao.horario}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-4 text-center text-gray-500">
-                    Nenhuma notificação
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      <h1 className="text-2xl font-bold text-gray-800 mb-8">Dashboard</h1>
 
       {/* Cards de Estatísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
