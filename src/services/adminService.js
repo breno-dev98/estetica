@@ -1,6 +1,5 @@
 export const adminService = {
   async login(credentials) {
-    // Simulação de autenticação
     if (credentials.email === "admin@example.com" && credentials.password === "admin123") {
       const token = "fake-jwt-token";
       localStorage.setItem('admin_token', token);
@@ -24,39 +23,34 @@ export const adminService = {
     ];
   },
 
-  async getAnamneses() {
-    // Simular busca de anamneses
-    return [
-      {
-        id: 1,
-        data: '2024-03-20',
-        tipo: 'Facial',
-        dadosPessoais: {
-          nome: 'Maria Silva',
-          dataNascimento: '1990-05-15',
-          contatos: {
-            telefone: '(85) 99999-9999',
-            email: 'maria@email.com'
-          }
-        },
-        queixaPrincipal: 'Manchas na pele',
-        historico: {
-          alergias: 'Nenhuma',
-          medicamentos: 'Nenhum',
-          cirurgias: 'Nenhuma'
-        }
-      },
-      // ... mais anamneses
-    ];
+  getAnamneses() {
+    try {
+      // Buscar anamneses do localStorage
+      const anamneseFacial = JSON.parse(localStorage.getItem('anamneseFacial') || '[]');
+      const anamneseCorporal = JSON.parse(localStorage.getItem('anamneseCorporal') || '[]');
+      
+      // Combinar todas as anamneses
+      return [...anamneseFacial, ...anamneseCorporal];
+    } catch (error) {
+      console.error('Erro ao carregar anamneses:', error);
+      return [];
+    }
   },
 
   async updateAgendamentoStatus(id, status) {
-    // Implementar atualização de status
-    console.log(`Atualizando status do agendamento ${id} para ${status}`);
+    try {
+      const agendamentos = JSON.parse(localStorage.getItem('appointments') || '[]');
+      const updatedAgendamentos = agendamentos.map(agendamento => 
+        agendamento.id === id ? { ...agendamento, status } : agendamento
+      );
+      localStorage.setItem('appointments', JSON.stringify(updatedAgendamentos));
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+      throw error;
+    }
   },
 
   async getServicos() {
-    // Por enquanto, retornar os serviços do arquivo local
     return require('../database/services').services;
   },
 
@@ -67,32 +61,27 @@ export const adminService = {
 
   getDashboardStats() {
     try {
-      // Pegar todos os agendamentos do localStorage usando a chave correta
       const agendamentos = JSON.parse(localStorage.getItem('appointments')) || [];
       
       // Data atual para comparações
       const hoje = new Date();
+      const dataHoje = hoje.toLocaleDateString('pt-BR'); // Formato: DD/MM/YYYY
       const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
       
-      // Calcular estatísticas
       const stats = {
+        // Filtra agendamentos criados hoje
         agendamentosHoje: agendamentos.filter(agendamento => {
-          // Converter data do formato BR para Date
-          const [dia, mes, ano] = agendamento.data.split('/');
-          const dataAgendamento = new Date(ano, mes - 1, dia);
-          return dataAgendamento.toDateString() === hoje.toDateString();
+          return agendamento.dataCriacao === dataHoje;
         }).length,
         
         agendamentosPendentes: agendamentos.filter(
           agendamento => agendamento.status === 'pendente'
         ).length,
         
-        // Conjunto único de clientes
         clientesTotal: new Set(
           agendamentos.map(agendamento => agendamento.cliente)
         ).size,
         
-        // Soma do faturamento do mês atual
         faturamentoMes: agendamentos
           .filter(agendamento => {
             const [dia, mes, ano] = agendamento.data.split('/');
@@ -100,7 +89,7 @@ export const adminService = {
             return dataAgendamento >= inicioMes && dataAgendamento <= hoje;
           })
           .reduce((total, agendamento) => {
-            const valor = parseFloat(agendamento.preco.replace('R$', '').trim());
+            const valor = parseFloat(agendamento.preco.replace('R$', '').replace(',', '.').trim());
             return total + (isNaN(valor) ? 0 : valor);
           }, 0),
       };

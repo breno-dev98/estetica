@@ -1,6 +1,24 @@
 import { useAgendamento } from '../../contexts/AgendamentoContext';
+import { useState } from 'react';
 
 export function AnamneseCorporal() {
+  const [formData, setFormData] = useState({
+    doencasCronicas: '',
+    alergias: '',
+    observacoes: '',
+    habitos: {
+      permaneceSentado: '',
+      dormeBem: '',
+      fazDieta: '',
+      cozinhaPropriasRefeicoes: '',
+      funcionamentoIntestinal: '',
+      praticaAtividadeFisica: '',
+      alimentacaoBalanceada: '',
+      ingereLiquidos: '',
+      gestante: ''
+    }
+  });
+
   const { 
     etapaAnamnese, 
     setEtapaAnamnese,
@@ -9,6 +27,27 @@ export function AnamneseCorporal() {
     setAnamnese, 
     setShowAnamnese 
   } = useAgendamento();
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name.includes('habitos_')) {
+      // Para campos de hábitos (radio buttons)
+      const habitoName = name.replace('habitos_', '');
+      setFormData(prev => ({
+        ...prev,
+        habitos: {
+          ...prev.habitos,
+          [habitoName]: value
+        }
+      }));
+    } else {
+      // Para campos de texto normais
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
 
   const handleDadosPessoais = (e) => {
     e.preventDefault();
@@ -28,31 +67,34 @@ export function AnamneseCorporal() {
   const handleHistoricoSaude = (e) => {
     e.preventDefault();
     const historicoSaude = {
-      doencasCronicas: e.target.historico_doencasCronicas.value,
-      alergias: e.target.historico_alergias.value,
-      observacoes: e.target.historico_observacoes.value,
+      doencasCronicas: formData.doencasCronicas,
+      alergias: formData.alergias,
+      observacoes: formData.observacoes,
       habitos: {
-        permaneceSentado: e.target.permaneceSentado.value === "S",
-        dormeBem: e.target.dormeBem.value === "S",
-        fazDieta: e.target.fazDieta.value === "S",
-        cozinhaPropriasRefeicoes: e.target.cozinhaPropriasRefeicoes.value === "S",
-        funcionamentoIntestinal: e.target.funcionamentoIntestinal.value === "S",
-        praticaAtividadeFisica: e.target.praticaAtividadeFisica.value === "S",
-        alimentacaoBalanceada: e.target.alimentacaoBalanceada.value === "S",
-        ingereLiquidos: e.target.ingereLiquidos.value === "S",
-        gestante: e.target.gestante.value === "S"
+        permaneceSentado: formData.habitos.permaneceSentado === "S",
+        dormeBem: formData.habitos.dormeBem === "S",
+        fazDieta: formData.habitos.fazDieta === "S",
+        cozinhaPropriasRefeicoes: formData.habitos.cozinhaPropriasRefeicoes === "S",
+        funcionamentoIntestinal: formData.habitos.funcionamentoIntestinal === "S",
+        praticaAtividadeFisica: formData.habitos.praticaAtividadeFisica === "S",
+        alimentacaoBalanceada: formData.habitos.alimentacaoBalanceada === "S",
+        ingereLiquidos: formData.habitos.ingereLiquidos === "S",
+        gestante: formData.habitos.gestante === "S"
       }
     };
 
     const anamnese = {
-      id: Date.now().toString(), // ID único para a anamnese
+      id: Date.now().toString(),
       tipo: 'corporal',
       dadosPessoais,
       historicoSaude,
-      dataCriacao: new Date().toISOString()
+      dataCriacao: new Date().toLocaleDateString('pt-BR'),
+      horaCriacao: new Date().toLocaleTimeString('pt-BR', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
     };
 
-    // Salvar no localStorage
     try {
       const anamneseCorporalSalva = JSON.parse(localStorage.getItem('anamneseCorporal') || '[]');
       anamneseCorporalSalva.push(anamnese);
@@ -170,13 +212,7 @@ export function AnamneseCorporal() {
           <p className="mt-2 text-gray-600">Etapa 2 de 2 - Histórico de Saúde</p>
         </div>
 
-        <form 
-          onSubmit={handleHistoricoSaude} 
-          id="historico-saude-form"
-          className="space-y-8 bg-white p-8 rounded-lg shadow"
-          autoComplete="off"
-        >
-          {/* Campos de texto */}
+        <form onSubmit={handleHistoricoSaude} className="space-y-8 bg-white p-8 rounded-lg shadow">
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -184,10 +220,9 @@ export function AnamneseCorporal() {
               </label>
               <input
                 type="text"
-                name="historico_doencasCronicas"
-                autoComplete="off"
-                data-form-type="other"
-                value=""
+                name="doencasCronicas"
+                value={formData.doencasCronicas}
+                onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
               />
             </div>
@@ -198,10 +233,9 @@ export function AnamneseCorporal() {
               </label>
               <input
                 type="text"
-                name="historico_alergias"
-                autoComplete="off"
-                data-form-type="other"
-                value=""
+                name="alergias"
+                value={formData.alergias}
+                onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
               />
             </div>
@@ -211,16 +245,15 @@ export function AnamneseCorporal() {
                 Observações
               </label>
               <textarea
-                name="historico_observacoes"
+                name="observacoes"
                 rows={4}
-                autoComplete="off"
-                data-form-type="other"
+                value={formData.observacoes}
+                onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary resize-none"
               />
             </div>
           </div>
 
-          {/* Perguntas Sim/Não */}
           <div className="space-y-6">
             {[
               { name: "permaneceSentado", label: "Costuma permanecer muito tempo sentado(a)?" },
@@ -241,8 +274,10 @@ export function AnamneseCorporal() {
                   <label className="flex items-center">
                     <input
                       type="radio"
-                      name={pergunta.name}
+                      name={`habitos_${pergunta.name}`}
                       value="S"
+                      checked={formData.habitos[pergunta.name] === "S"}
+                      onChange={handleInputChange}
                       required
                       className="w-4 h-4 text-primary"
                     />
@@ -251,8 +286,10 @@ export function AnamneseCorporal() {
                   <label className="flex items-center">
                     <input
                       type="radio"
-                      name={pergunta.name}
+                      name={`habitos_${pergunta.name}`}
                       value="N"
+                      checked={formData.habitos[pergunta.name] === "N"}
+                      onChange={handleInputChange}
                       required
                       className="w-4 h-4 text-primary"
                     />

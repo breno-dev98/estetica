@@ -67,41 +67,36 @@ export function ServicosSelecionados() {
 
     const newId = generateShortId();
 
-    // Buscar a anamnese correspondente
-    const anamneseKey = categoria === 'facial' ? 'anamneseFacial' : 'anamneseCorporal';
-    const anamneses = JSON.parse(localStorage.getItem(anamneseKey) || '[]');
-    const ultimaAnamnese = anamneses[anamneses.length - 1];
-
     const appointment = {
       id: newId,
-      cliente: ultimaAnamnese?.dadosPessoais?.nome,
+      cliente: anamnese.dadosPessoais.nome,
       tipoAtendimento,
       categoria,
       servicos: servicesSelecteds.map((service) => service.title),
       data: agendamentoService.formatDateToBR(date),
       hora,
+      status: 'pendente',
       preco: `R$ ${agendamentoService.calculateTotal(servicesSelecteds).toFixed(2)}`,
       metodo,
       endereco: dadosEndereco,
-      status: 'pendente',
-      createdAt: new Date().toISOString(),
-      anamneseId: ultimaAnamnese?.id // Relacionamento com a anamnese
+      dataCriacao: new Date().toLocaleDateString('pt-BR'),
+      horaCriacao: new Date().toLocaleTimeString('pt-BR', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      }),
+      anamnese
     };
 
+    // Log para debug
+    console.log('Agendamento Completo:', appointment);
+
     try {
-      // Obter agendamentos existentes do localStorage
       const existingAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
-      
-      // Adicionar novo agendamento à lista
       const updatedAppointments = [...existingAppointments, appointment];
-      
-      // Salvar lista atualizada no localStorage
       localStorage.setItem('appointments', JSON.stringify(updatedAppointments));
 
-      // Atualizar estados
       setAppointmentId(newId);
       setShowConfirmacao(true);
-      
     } catch (error) {
       console.error('Erro ao salvar agendamento:', error);
       alert('Ocorreu um erro ao salvar o agendamento. Por favor, tente novamente.');

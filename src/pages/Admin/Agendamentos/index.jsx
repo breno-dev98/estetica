@@ -190,6 +190,7 @@ const Agendamentos = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pagamento</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hora</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data do Agendamento</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
               </tr>
@@ -208,6 +209,9 @@ const Agendamentos = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{agendamento.pagamento}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{agendamento.data}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{agendamento.hora}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {agendamento.dataCriacao} às {agendamento.horaCriacao}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 rounded-full text-xs ${
                       agendamento.status === 'pendente' 

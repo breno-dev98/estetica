@@ -1,6 +1,33 @@
 import { useAgendamento } from '../../contexts/AgendamentoContext';
+import { useState } from 'react';
 
 export function AnamneseFacial() {
+  const [formData, setFormData] = useState({
+    tratamentoEstetico: {
+      resposta: '',
+      qual: ''
+    },
+    alergias: {
+      resposta: '',
+      qual: ''
+    },
+    medicamentos: {
+      resposta: '',
+      qual: ''
+    },
+    filtroSolar: {
+      resposta: '',
+      fator: ''
+    },
+    perguntas: {
+      acidoPeeling: '',
+      cancerPele: '',
+      cancerFamilia: '',
+      gravidaAmamentando: '',
+      disturbioOcular: ''
+    }
+  });
+
   const { 
     etapaAnamnese, 
     setEtapaAnamnese,
@@ -11,6 +38,31 @@ export function AnamneseFacial() {
     setAnamnese, 
     setShowAnamnese 
   } = useAgendamento();
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name.includes('_')) {
+      const [campo, tipo] = name.split('_');
+      if (campo === 'pergunta') {
+        setFormData(prev => ({
+          ...prev,
+          perguntas: {
+            ...prev.perguntas,
+            [tipo]: value
+          }
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          [campo]: {
+            ...prev[campo],
+            [tipo]: value
+          }
+        }));
+      }
+    }
+  };
 
   const handleDadosPessoais = (e) => {
     e.preventDefault();
@@ -39,40 +91,53 @@ export function AnamneseFacial() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const informacoesPessoais = {
+    
+    // Log para debug
+    console.log('Form Data:', formData);
+
+    const historicoSaude = {
       tratamentoEstetico: {
-        resposta: e.target.tratamentoEstetico.value === "S",
-        qual: e.target.qualTratamento.value
+        resposta: formData.tratamentoEstetico.resposta === "S",
+        qual: formData.tratamentoEstetico.qual || ''
       },
       alergias: {
-        resposta: e.target.alergias.value === "S",
-        qual: e.target.qualAlergia.value
+        resposta: formData.alergias.resposta === "S",
+        qual: formData.alergias.qual || ''
       },
       medicamentos: {
-        resposta: e.target.medicamentos.value === "S",
-        qual: e.target.qualMedicamento.value
+        resposta: formData.medicamentos.resposta === "S",
+        qual: formData.medicamentos.qual || ''
       },
       filtroSolar: {
-        resposta: e.target.filtroSolar.value === "S",
-        fator: e.target.fatorProtetor.value
+        resposta: formData.filtroSolar.resposta === "S",
+        fator: formData.filtroSolar.fator || ''
       },
-      acidoPeeling: e.target.pergunta5.value === "S",
-      cancerPele: e.target.pergunta6.value === "S",
-      cancerFamilia: e.target.pergunta7.value === "S",
-      gravidaAmamentando: e.target.pergunta8.value === "S",
-      disturbioOcular: e.target.pergunta9.value === "S"
+      acidoPeeling: formData.perguntas.acidoPeeling === "S",
+      cancerPele: formData.perguntas.cancerPele === "S",
+      cancerFamilia: formData.perguntas.cancerFamilia === "S",
+      gravidaAmamentando: formData.perguntas.gravidaAmamentando === "S",
+      disturbioOcular: formData.perguntas.disturbioOcular === "S"
     };
 
+    // Log para debug
+    console.log('Historico Saude:', historicoSaude);
+
     const anamnese = {
-      id: Date.now().toString(), // ID único para a anamnese
+      id: Date.now().toString(),
       tipo: 'facial',
       dadosPessoais,
       queixaPrincipal,
-      informacoesPessoais,
-      dataCriacao: new Date().toISOString()
+      historicoSaude,
+      dataCriacao: new Date().toLocaleDateString('pt-BR'),
+      horaCriacao: new Date().toLocaleTimeString('pt-BR', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
     };
 
-    // Salvar no localStorage
+    // Log para debug
+    console.log('Anamnese Completa:', anamnese);
+
     try {
       const anamneseFacialSalva = JSON.parse(localStorage.getItem('anamneseFacial') || '[]');
       anamneseFacialSalva.push(anamnese);
@@ -84,6 +149,14 @@ export function AnamneseFacial() {
       console.error('Erro ao salvar anamnese facial:', error);
     }
   };
+
+  const perguntasSimples = [
+    { id: 'acidoPeeling', texto: "Faz uso de algum ácido ou peeling químico?" },
+    { id: 'cancerPele', texto: "Já teve algum tipo de câncer de pele?" },
+    { id: 'cancerFamilia', texto: "Tem casos de câncer de pele na família?" },
+    { id: 'gravidaAmamentando', texto: "Está grávida ou amamentando?" },
+    { id: 'disturbioOcular', texto: "Possui algum distúrbio ocular?" }
+  ];
 
   if (etapaAnamnese === 1) {
     return (
@@ -233,7 +306,7 @@ export function AnamneseFacial() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-lg shadow">
-          {/* Pergunta 1 */}
+          {/* Tratamento Estético */}
           <div className="space-y-4">
             <div>
               <p className="text-sm font-medium text-gray-700 mb-2">
@@ -243,34 +316,40 @@ export function AnamneseFacial() {
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="tratamentoEstetico"
+                    name="tratamentoEstetico_resposta"
                     value="S"
-                    className="w-4 h-4 text-primary"
+                    checked={formData.tratamentoEstetico.resposta === "S"}
+                    onChange={handleInputChange}
                     required
+                    className="w-4 h-4 text-primary"
                   />
                   <span className="ml-2">Sim</span>
                 </label>
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="tratamentoEstetico"
+                    name="tratamentoEstetico_resposta"
                     value="N"
-                    className="w-4 h-4 text-primary"
+                    checked={formData.tratamentoEstetico.resposta === "N"}
+                    onChange={handleInputChange}
                     required
+                    className="w-4 h-4 text-primary"
                   />
                   <span className="ml-2">Não</span>
                 </label>
               </div>
               <input
                 type="text"
-                name="qualTratamento"
+                name="tratamentoEstetico_qual"
+                value={formData.tratamentoEstetico.qual}
+                onChange={handleInputChange}
                 placeholder="Qual?"
-                className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md"
               />
             </div>
           </div>
 
-          {/* Pergunta 2 */}
+          {/* Alergias */}
           <div className="space-y-4">
             <div>
               <p className="text-sm font-medium text-gray-700 mb-2">
@@ -280,34 +359,40 @@ export function AnamneseFacial() {
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="alergias"
+                    name="alergias_resposta"
                     value="S"
-                    className="w-4 h-4 text-primary"
+                    checked={formData.alergias.resposta === "S"}
+                    onChange={handleInputChange}
                     required
+                    className="w-4 h-4 text-primary"
                   />
                   <span className="ml-2">Sim</span>
                 </label>
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="alergias"
+                    name="alergias_resposta"
                     value="N"
-                    className="w-4 h-4 text-primary"
+                    checked={formData.alergias.resposta === "N"}
+                    onChange={handleInputChange}
                     required
+                    className="w-4 h-4 text-primary"
                   />
                   <span className="ml-2">Não</span>
                 </label>
               </div>
               <input
                 type="text"
-                name="qualAlergia"
+                name="alergias_qual"
+                value={formData.alergias.qual}
+                onChange={handleInputChange}
                 placeholder="Qual?"
-                className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md"
               />
             </div>
           </div>
 
-          {/* Pergunta 3 */}
+          {/* Medicamentos */}
           <div className="space-y-4">
             <div>
               <p className="text-sm font-medium text-gray-700 mb-2">
@@ -317,34 +402,40 @@ export function AnamneseFacial() {
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="medicamentos"
+                    name="medicamentos_resposta"
                     value="S"
-                    className="w-4 h-4 text-primary"
+                    checked={formData.medicamentos.resposta === "S"}
+                    onChange={handleInputChange}
                     required
+                    className="w-4 h-4 text-primary"
                   />
                   <span className="ml-2">Sim</span>
                 </label>
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="medicamentos"
+                    name="medicamentos_resposta"
                     value="N"
-                    className="w-4 h-4 text-primary"
+                    checked={formData.medicamentos.resposta === "N"}
+                    onChange={handleInputChange}
                     required
+                    className="w-4 h-4 text-primary"
                   />
                   <span className="ml-2">Não</span>
                 </label>
               </div>
               <input
                 type="text"
-                name="qualMedicamento"
+                name="medicamentos_qual"
+                value={formData.medicamentos.qual}
+                onChange={handleInputChange}
                 placeholder="Qual?"
-                className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md"
               />
             </div>
           </div>
 
-          {/* Pergunta 4 */}
+          {/* Filtro Solar */}
           <div className="space-y-4">
             <div>
               <p className="text-sm font-medium text-gray-700 mb-2">
@@ -354,64 +445,68 @@ export function AnamneseFacial() {
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="filtroSolar"
+                    name="filtroSolar_resposta"
                     value="S"
-                    className="w-4 h-4 text-primary"
+                    checked={formData.filtroSolar.resposta === "S"}
+                    onChange={handleInputChange}
                     required
+                    className="w-4 h-4 text-primary"
                   />
                   <span className="ml-2">Sim</span>
                 </label>
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="filtroSolar"
+                    name="filtroSolar_resposta"
                     value="N"
-                    className="w-4 h-4 text-primary"
+                    checked={formData.filtroSolar.resposta === "N"}
+                    onChange={handleInputChange}
                     required
+                    className="w-4 h-4 text-primary"
                   />
                   <span className="ml-2">Não</span>
                 </label>
               </div>
               <input
                 type="text"
-                name="fatorProtetor"
+                name="filtroSolar_fator"
+                value={formData.filtroSolar.fator}
+                onChange={handleInputChange}
                 placeholder="Qual fator?"
-                className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md"
               />
             </div>
           </div>
 
           {/* Demais perguntas Sim/Não */}
           <div className="space-y-6">
-            {[
-              "Faz uso de algum ácido ou peeling químico?",
-              "Já teve algum tipo de câncer de pele?",
-              "Tem casos de câncer de pele na família?",
-              "Está grávida ou amamentando?",
-              "Possui algum distúrbio ocular?"
-            ].map((pergunta, index) => (
-              <div key={index} className="space-y-2">
+            {perguntasSimples.map((pergunta) => (
+              <div key={pergunta.id} className="space-y-2">
                 <p className="text-sm font-medium text-gray-700">
-                  {pergunta} <span className="text-red-500">*</span>
+                  {pergunta.texto} <span className="text-red-500">*</span>
                 </p>
                 <div className="flex gap-4">
                   <label className="flex items-center">
                     <input
                       type="radio"
-                      name={`pergunta${index + 5}`}
+                      name={`pergunta_${pergunta.id}`}
                       value="S"
-                      className="w-4 h-4 text-primary"
+                      checked={formData.perguntas[pergunta.id] === "S"}
+                      onChange={handleInputChange}
                       required
+                      className="w-4 h-4 text-primary"
                     />
                     <span className="ml-2">Sim</span>
                   </label>
                   <label className="flex items-center">
                     <input
                       type="radio"
-                      name={`pergunta${index + 5}`}
+                      name={`pergunta_${pergunta.id}`}
                       value="N"
-                      className="w-4 h-4 text-primary"
+                      checked={formData.perguntas[pergunta.id] === "N"}
+                      onChange={handleInputChange}
                       required
+                      className="w-4 h-4 text-primary"
                     />
                     <span className="ml-2">Não</span>
                   </label>
