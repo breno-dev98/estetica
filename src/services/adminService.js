@@ -65,14 +65,74 @@ export const adminService = {
     console.log('Atualizando serviço:', id, servicoData);
   },
 
-  async getDashboardStats() {
-    // Simular dados do dashboard
-    return {
-      totalAgendamentos: 150,
-      agendamentosHoje: 8,
-      faturamentoMes: 12500.00,
-      clientesNovos: 25
-    };
+  getDashboardStats() {
+    try {
+      // Pegar todos os agendamentos do localStorage usando a chave correta
+      const agendamentos = JSON.parse(localStorage.getItem('appointments')) || [];
+      
+      // Data atual para comparações
+      const hoje = new Date();
+      const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+      
+      // Calcular estatísticas
+      const stats = {
+        agendamentosHoje: agendamentos.filter(agendamento => {
+          // Converter data do formato BR para Date
+          const [dia, mes, ano] = agendamento.data.split('/');
+          const dataAgendamento = new Date(ano, mes - 1, dia);
+          return dataAgendamento.toDateString() === hoje.toDateString();
+        }).length,
+        
+        agendamentosPendentes: agendamentos.filter(
+          agendamento => agendamento.status === 'pendente'
+        ).length,
+        
+        // Conjunto único de clientes
+        clientesTotal: new Set(
+          agendamentos.map(agendamento => agendamento.cliente)
+        ).size,
+        
+        // Soma do faturamento do mês atual
+        faturamentoMes: agendamentos
+          .filter(agendamento => {
+            const [dia, mes, ano] = agendamento.data.split('/');
+            const dataAgendamento = new Date(ano, mes - 1, dia);
+            return dataAgendamento >= inicioMes && dataAgendamento <= hoje;
+          })
+          .reduce((total, agendamento) => {
+            const valor = parseFloat(agendamento.preco.replace('R$', '').trim());
+            return total + (isNaN(valor) ? 0 : valor);
+          }, 0),
+      };
+      
+      return stats;
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error);
+      return {
+        agendamentosHoje: 0,
+        agendamentosPendentes: 0,
+        clientesTotal: 0,
+        faturamentoMes: 0
+      };
+    }
+  },
+
+  getRecentAppointments() {
+    try {
+      const agendamentos = JSON.parse(localStorage.getItem('appointments')) || [];
+      
+      // Ordenar por data, mais recentes primeiro
+      return agendamentos.sort((a, b) => {
+        const [diaA, mesA, anoA] = a.data.split('/');
+        const [diaB, mesB, anoB] = b.data.split('/');
+        const dataA = new Date(anoA, mesA - 1, diaA, ...a.hora.split(':'));
+        const dataB = new Date(anoB, mesB - 1, diaB, ...b.hora.split(':'));
+        return dataB - dataA;
+      }).slice(0, 5); // Retorna apenas os 5 mais recentes
+    } catch (error) {
+      console.error('Erro ao carregar agendamentos recentes:', error);
+      return [];
+    }
   },
 
   async getAgendamentosPorServico() {
