@@ -1,6 +1,26 @@
 import { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService';
 
+const BooleanBadge = ({ value }) => (
+  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${
+    value 
+      ? 'bg-green-100 text-green-800'
+      : 'bg-red-100 text-red-800'
+  }`}>
+    {value ? 'Sim' : 'Não'}
+  </span>
+);
+
+const formatTitle = (key) => {
+  const titles = {
+    telefone: 'Telefone de Contato',
+    redeSocial: 'Instagram',
+    email: 'E-mail'
+  };
+  
+  return titles[key] || key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
+};
+
 export function AnamneseAdmin() {
   const [anamneses, setAnamneses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,10 +30,31 @@ export function AnamneseAdmin() {
     loadAnamneses();
   }, []);
 
-  const loadAnamneses = async () => {
+  const loadAnamneses = () => {
     try {
-      const data = await adminService.getAnamneses();
-      setAnamneses(data);
+      const storedAppointments = localStorage.getItem('appointments');
+      const appointments = storedAppointments ? JSON.parse(storedAppointments) : [];
+      
+      // Extrair as anamneses dos agendamentos
+      const anamnesisData = appointments
+        .filter(appointment => appointment.anamnese) // Filtra apenas agendamentos com anamnese
+        .map(appointment => ({
+          id: appointment.id,
+          data: appointment.data,
+          tipo: appointment.tipo,
+          ...appointment.anamnese,
+          dadosPessoais: {
+            nome: appointment.nome,
+            dataNascimento: appointment.dataNascimento,
+            contatos: {
+              telefone: appointment.telefone,
+              email: appointment.email
+            },
+            ...appointment.anamnese.dadosPessoais
+          }
+        }));
+
+      setAnamneses(anamnesisData);
     } catch (error) {
       console.error('Erro ao carregar anamneses:', error);
     } finally {
@@ -23,6 +64,47 @@ export function AnamneseAdmin() {
 
   const handleViewAnamnese = (anamnese) => {
     setSelectedAnamnese(anamnese);
+  };
+
+  const formatValue = (value) => {
+    if (typeof value === 'boolean') {
+      return <BooleanBadge value={value} />;
+    }
+    
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    
+    if (typeof value === 'object' && value !== null) {
+      return Object.entries(value)
+        .map(([k, v]) => {
+          const cleanKey = k.replace(/^(resposta|qual|fator):?\s*/i, '');
+          
+          if (typeof v === 'boolean') {
+            return (
+              <div key={k}>
+                <BooleanBadge value={v} />
+                {cleanKey && cleanKey !== 'resposta' && (
+                  <span className="ml-2 text-sm text-gray-600">{cleanKey}</span>
+                )}
+              </div>
+            );
+          }
+          
+          if (k.toLowerCase() === 'resposta') {
+            return formatValue(v);
+          }
+          
+          if (cleanKey) {
+            return `${cleanKey}: ${formatValue(v)}`;
+          }
+          
+          return formatValue(v);
+        })
+        .filter(Boolean);
+    }
+    
+    return value?.toString() || '';
   };
 
   if (loading) return <div>Carregando...</div>;
@@ -42,49 +124,73 @@ export function AnamneseAdmin() {
             </button>
             
             <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-lg font-medium mb-4">
+              <h3 className="text-xl font-medium mb-6 text-gray-800 border-b pb-3">
                 Anamnese de {selectedAnamnese.dadosPessoais.nome}
               </h3>
               
-              <div className="space-y-4">
-                <section>
-                  <h4 className="font-medium text-gray-700 mb-2">Dados Pessoais</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-500">Nome</p>
-                      <p>{selectedAnamnese.dadosPessoais.nome}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Data de Nascimento</p>
-                      <p>{selectedAnamnese.dadosPessoais.dataNascimento}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Telefone</p>
-                      <p>{selectedAnamnese.dadosPessoais.contatos.telefone}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p>{selectedAnamnese.dadosPessoais.contatos.email}</p>
-                    </div>
-                  </div>
-                </section>
+              <div className="space-y-8">
+                {Object.entries(selectedAnamnese).map(([sectionKey, sectionValue]) => {
+                  if (['id', 'data', 'tipo'].includes(sectionKey)) {
+                    return null;
+                  }
 
-                <section>
-                  <h4 className="font-medium text-gray-700 mb-2">Queixa Principal</h4>
-                  <p>{selectedAnamnese.queixaPrincipal}</p>
-                </section>
-
-                <section>
-                  <h4 className="font-medium text-gray-700 mb-2">Histórico</h4>
-                  <div className="space-y-2">
-                    {selectedAnamnese.historico && Object.entries(selectedAnamnese.historico).map(([key, value]) => (
-                      <div key={key}>
-                        <p className="text-sm text-gray-500">{key}</p>
-                        <p>{value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                  return (
+                    <section key={sectionKey} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                      <h4 className="font-medium text-lg text-gray-800 mb-4 flex items-center">
+                        <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
+                        {sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1).replace(/([A-Z])/g, ' $1')}
+                      </h4>
+                      
+                      {typeof sectionValue === 'object' ? (
+                        <div className="grid grid-cols-2 gap-6">
+                          {Object.entries(sectionValue).map(([key, value]) => (
+                            <div key={key} className="bg-gray-50 p-4 rounded-md">
+                              <p className="text-sm font-medium text-gray-600 mb-1">
+                                {sectionKey === 'dadosPessoais' && key === 'contatos' 
+                                  ? 'Informações de Contato'
+                                  : formatTitle(key)}
+                              </p>
+                              <div className="text-gray-800 space-y-2">
+                                {typeof value === 'object' && key === 'contatos' ? (
+                                  Object.entries(value).map(([contactKey, contactValue]) => (
+                                    <div key={contactKey} className="flex items-center">
+                                      <span className="text-sm font-medium text-gray-600 mr-2">
+                                        {formatTitle(contactKey)}:
+                                      </span>
+                                      <span className="text-sm">{contactValue}</span>
+                                    </div>
+                                  ))
+                                ) : (
+                                  typeof value === 'boolean' ? (
+                                    <BooleanBadge value={value} />
+                                  ) : (
+                                    Array.isArray(formatValue(value)) ? 
+                                      formatValue(value).map((item, index) => (
+                                        <div key={index} className="text-sm">
+                                          {item}
+                                        </div>
+                                      )) :
+                                      <p className="text-sm">{formatValue(value)}</p>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-gray-800">
+                            {typeof sectionValue === 'boolean' ? (
+                              <BooleanBadge value={sectionValue} />
+                            ) : (
+                              <p className="text-sm">{formatValue(sectionValue)}</p>
+                            )}
+                          </p>
+                        </div>
+                      )}
+                    </section>
+                  );
+                })}
               </div>
             </div>
           </div>
